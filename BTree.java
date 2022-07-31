@@ -20,6 +20,7 @@ public class BTree {
     //RAF to create new file to store all BTree information
     private RandomAccessFile byteFile;
 
+    //Need to serialize Btre
     public BTree(int k, int t) {
         seqLength = k;
         degree = t;

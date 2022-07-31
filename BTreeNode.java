@@ -1,3 +1,5 @@
+import java.nio.ByteBuffer;
+
 public class BTreeNode {
 
     //Track location
@@ -40,5 +42,14 @@ public class BTreeNode {
 
     public void setChild(long fileLocation, int index) {
         children[index] = fileLocation;
+    }
+
+    public byte[] serialize() {
+        ByteBuffer bb = ByteBuffer.allocate();//pass in the amount of bytes each BTreeNode is gonna be
+
+    }
+
+    public BTreeNode(ByteBuffer bb) {
+
     }
 }
