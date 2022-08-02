@@ -1,35 +1,60 @@
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-
-
 public class BTreeNodeTester {
 
-    public static void main(String[] args) {
-        BTreeNode n = new BTreeNode(1000);
-        n.keys[1] = TreeObject(1, 1);
-        n.keys[2] = TreeObject(2, 2);
-        n.keys[3] = TreeObject(3, 3);
+    public void main(String[] args) throws IOException {
+        BTreeNode n = new BTreeNode(1000, 3);
+        n.keys[1] = new TreeObject(1, 1);
+        n.keys[2] = new TreeObject(2, 2);
+        n.keys[3] = new TreeObject(3, 3);
         n.children[1] = 1000;
         n.children[2] = 2000;
         n.children[3] = 3000;
         n.children[4] = 4000;
 
         byte[] node = n.serialize();
-        ByteBuffer bb = ByteBuffer.allocate(0);
-        bb.array() = node;
+        ByteBuffer bb = ByteBuffer.allocate(4 + 8 + (12 * ((2 * n.degree) - 1) + (2 * n.degree)));
+        bb = ByteBuffer.wrap(node);
         BTreeNode n2 = new BTreeNode(bb);
 
-        Compare(n, n2);
+        System.out.println(Compare(n, n2));
     }
 
     public static boolean Compare(BTreeNode n, BTreeNode n2) {
 
+        boolean nodesMatch = false;
+
+        nodesMatch = n.location == n2.location;
+
+        nodesMatch = n.numKeys == n2.numKeys;
+
+        for (int i = 1; i <= n.getKeys(); i++) {
+            if (n.keys[i] == n2.keys[i]) {
+                nodesMatch = true;
+            } else {
+                nodesMatch = false;
+                break;
+            }
+        }
+
+        for (int i = 1; i <= n.getKeys() + 1; i++) {
+            if (n.children[i] == n2.children[i]) {
+                nodesMatch = true;
+            } else {
+                nodesMatch = false;
+                break;
+            }
+        }
+
+        return nodesMatch;
     }
 
 
     //BTreeNode Start
     public class BTreeNode {
+
+        int degree;
 
         //Track location
         private long location;
@@ -78,10 +103,10 @@ public class BTreeNodeTester {
             children[index] = fileLocation;
         }
 
-        public byte[] serialize() throws IOException {
-            ByteBuffer bb = ByteBuffer.allocate(4 + 8 + (12 * ((2 * degree) - 1) + (2 * degree)));//pass in the amount of bytes each BTreeNode is gonna be
+        public byte[] serialize() {
+            ByteBuffer bb = ByteBuffer.allocate(4 + 8 + (12 * ((2 * degree) - 1) + (2 * degree)));
             bb.putInt(numKeys);
-            if (leaf == true) {
+            if (leaf) {
                 bb.put((byte)15);
             } else {
                 bb.put((byte)0);
@@ -100,21 +125,18 @@ public class BTreeNodeTester {
         public BTreeNode(ByteBuffer bb) {
             numKeys = bb.getInt();
             byte leafStatus = bb.get();
-            if (leafStatus == 15) {
-                leaf = true;
-            } else {
-                leaf = false;
-            }
+            leaf = leafStatus == 15;
             keys = new TreeObject[(2 * degree)];
+
             for (int i = 1; i < numKeys; i++) {
                 keys[i] = new TreeObject(bb.getLong(), bb.getInt());
             }
+
             children = new long[2 * degree];
+
             for (int i = 1; i <= numKeys + 1; i++) {
                 children[i] = bb.getLong();
             }
         }
     }
-
-
 }
