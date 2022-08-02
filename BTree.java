@@ -45,7 +45,7 @@ public class BTree {
         seqLength = k;
         degree = t;
         this.cacheSize = cacheSize;
-        Cache<BTreeNode> bTreeCache = new Cache<>();//Need to find max size
+        //Cache<BTreeNode> bTreeCache = new Cache<>();//Need to find max size
     }
 
     //BTreeNode Start
@@ -98,10 +98,11 @@ public class BTree {
             children[index] = fileLocation;
         }
 
-        public byte[] serialize() throws IOException {
-            ByteBuffer bb = ByteBuffer.allocate(4 + 8 + (12 * ((2 * degree) - 1) + (2 * degree)));//pass in the amount of bytes each BTreeNode is gonna be
+        public byte[] serialize() {
+            int localVar = 4 + 8 + (12 * ((2 * degree) - 1) + (2 * degree));
+            ByteBuffer bb = ByteBuffer.allocate(4 + 1 + 12 * (2 * degree - 1) + 8 * (2 * degree));
             bb.putInt(numKeys);
-            if (leaf == true) {
+            if (leaf) {
                 bb.put((byte)15);
             } else {
                 bb.put((byte)0);
@@ -117,19 +118,19 @@ public class BTree {
             return bb.array();
         }
 
-        public BTreeNode(ByteBuffer bb) {
+        public BTreeNode(ByteBuffer bb, int t) {
+            degree = t;
             numKeys = bb.getInt();
             byte leafStatus = bb.get();
-            if (leafStatus == 15) {
-                leaf = true;
-            } else {
-                leaf = false;
-            }
+            leaf = leafStatus == 15;
             keys = new TreeObject[(2 * degree)];
-            for (int i = 1; i < numKeys; i++) {
+
+            for (int i = 1; i <= numKeys; i++) {
                 keys[i] = new TreeObject(bb.getLong(), bb.getInt());
             }
+
             children = new long[2 * degree];
+
             for (int i = 1; i <= numKeys + 1; i++) {
                 children[i] = bb.getLong();
             }

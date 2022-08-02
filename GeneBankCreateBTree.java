@@ -35,7 +35,7 @@ public class GeneBankCreateBTree {
         //todo: write debug level support
         try
         {
-            long scannedDNA = scanDNA(gbkFile);
+            long scannedDNA = scanDNA(gbkFile, sequenceLength);
         }
         catch (FileNotFoundException e)
         {
@@ -58,7 +58,7 @@ public class GeneBankCreateBTree {
 
     //Need to scan and avoid all patterns until we reach ORIGIN
     //Then scan line by line
-    public static long scanDNA(File file) throws FileNotFoundException //change return type
+    public static long scanDNA(File file, int sequenceLength) throws FileNotFoundException //change return type
     {
         long dna = 0;
         String[] subLenK = new String[100];

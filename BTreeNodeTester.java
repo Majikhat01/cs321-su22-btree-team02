@@ -3,8 +3,9 @@ import java.nio.ByteBuffer;
 
 public class BTreeNodeTester {
 
-    public void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
         BTreeNode n = new BTreeNode(1000, 3);
+        n.numKeys = 3;
         n.keys[1] = new TreeObject(1, 1);
         n.keys[2] = new TreeObject(2, 2);
         n.keys[3] = new TreeObject(3, 3);
@@ -12,11 +13,12 @@ public class BTreeNodeTester {
         n.children[2] = 2000;
         n.children[3] = 3000;
         n.children[4] = 4000;
+        int degree = 3;
 
         byte[] node = n.serialize();
-        ByteBuffer bb = ByteBuffer.allocate(4 + 8 + (12 * ((2 * n.degree) - 1) + (2 * n.degree)));
+        ByteBuffer bb = ByteBuffer.allocate(4 + 1 + 12 * (2 * degree - 1) + 8 * (2 * degree));
         bb = ByteBuffer.wrap(node);
-        BTreeNode n2 = new BTreeNode(bb);
+        BTreeNode n2 = new BTreeNode(bb, degree);
 
         System.out.println(Compare(n, n2));
     }
@@ -52,7 +54,7 @@ public class BTreeNodeTester {
 
 
     //BTreeNode Start
-    public class BTreeNode {
+    public static class BTreeNode {
 
         int degree;
 
@@ -71,6 +73,7 @@ public class BTreeNodeTester {
 
         // t = degree
         public BTreeNode(long location, int t) {
+            degree = t;
             this.location = location;
             numKeys = 0;
             leaf = false;
@@ -104,7 +107,8 @@ public class BTreeNodeTester {
         }
 
         public byte[] serialize() {
-            ByteBuffer bb = ByteBuffer.allocate(4 + 8 + (12 * ((2 * degree) - 1) + (2 * degree)));
+            int localVar = 4 + 8 + (12 * ((2 * degree) - 1) + (2 * degree));
+            ByteBuffer bb = ByteBuffer.allocate(4 + 1 + 12 * (2 * degree - 1) + 8 * (2 * degree));
             bb.putInt(numKeys);
             if (leaf) {
                 bb.put((byte)15);
@@ -122,13 +126,14 @@ public class BTreeNodeTester {
             return bb.array();
         }
 
-        public BTreeNode(ByteBuffer bb) {
+        public BTreeNode(ByteBuffer bb, int t) {
+            degree = t;
             numKeys = bb.getInt();
             byte leafStatus = bb.get();
             leaf = leafStatus == 15;
             keys = new TreeObject[(2 * degree)];
 
-            for (int i = 1; i < numKeys; i++) {
+            for (int i = 1; i <= numKeys; i++) {
                 keys[i] = new TreeObject(bb.getLong(), bb.getInt());
             }
 
