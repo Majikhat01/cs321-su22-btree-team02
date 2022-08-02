@@ -1,52 +1,32 @@
 import java.io.IOException;
-import java.io.FileNotFoundException;
-import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 
-public class BTree {
 
-    //Need root which is reference to byte address
-    private long root;
 
-    //K = substring length
-    private int seqLength;
+public class BTreeNodeTester {
 
-    //Degree of the tree
-    private int degree;
+    public static void main(String[] args) {
+        BTreeNode n = new BTreeNode(1000);
+        n.keys[1] = TreeObject(1, 1);
+        n.keys[2] = TreeObject(2, 2);
+        n.keys[3] = TreeObject(3, 3);
+        n.children[1] = 1000;
+        n.children[2] = 2000;
+        n.children[3] = 3000;
+        n.children[4] = 4000;
 
-    //Potential Cache Size
-    private int cacheSize;
+        byte[] node = n.serialize();
+        ByteBuffer bb = ByteBuffer.allocate(0);
+        bb.array() = node;
+        BTreeNode n2 = new BTreeNode(bb);
 
-    //Cache
-    private Cache cache;
+        Compare(n, n2);
+    }
 
-    //RAF to create new file to store all BTree information
-    private RandomAccessFile byteFile;
-
-    //Offset of BTreeNode in the byteArray
-    private int offSetValue;
-
-    //Need to serialize Btree
-    public BTree(int k, int t, String fileName) throws FileNotFoundException {
-        seqLength = k;
-        degree = t;
-        RandomAccessFile byteFile = new RandomAccessFile(fileName,"rw");
-
-        offSetValue = 1000; //calculate by hand the size of each BTreeNode by terms of the degree
-        // (2t-1)
-        //allocate the first address to 0 then we will allocate by the offSetValue for each new BTreeNode
-
-        //Specify location in the RAF for next address
-
+    public static boolean Compare(BTreeNode n, BTreeNode n2) {
 
     }
 
-    public BTree(int k, int t, int cacheSize) {
-        seqLength = k;
-        degree = t;
-        this.cacheSize = cacheSize;
-        Cache<BTreeNode> bTreeCache = new Cache<>();//Need to find max size
-    }
 
     //BTreeNode Start
     public class BTreeNode {
@@ -135,4 +115,6 @@ public class BTree {
             }
         }
     }
+
+
 }

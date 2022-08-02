@@ -16,6 +16,10 @@ public class TreeObject {
         return frequency;
     }
 
+    public int setFrequency(int newFrequency) {
+        return frequency = newFrequency;
+    }
+
     public int compareTo(TreeObject compObject) {
         if (DNA > compObject.getDNA()) {
             return 1;
@@ -26,16 +30,14 @@ public class TreeObject {
         return 0;
     }
 
-    public TreeObject(long startDNA) {
+    public TreeObject(long startDNA, int newFrequency) {
         DNA = startDNA;
-        frequency = 1;
+        frequency = newFrequency;
     }
 
     public long getDNA() {
         return DNA;
     }
-
-    public int getFrequency() { return frequency; }
 
     public String toString() {
         String stringDNA = Long.toString(DNA);
