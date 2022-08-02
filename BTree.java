@@ -48,7 +48,24 @@ public class BTree {
         //Cache<BTreeNode> bTreeCache = new Cache<>();//Need to find max size
     }
 
-    //BTreeNode Start
+    BTreeSearch(x,k) {
+
+    }
+
+    BTreeInsert(long DNAStrand) {
+
+    }
+
+    BTreeInsertNonfull(x,k) {
+
+    }
+
+    BTreeSplitChild(x,i,y) {
+
+    }
+
+
+    //**************** BTreeNode Start *****************
     public class BTreeNode {
 
         //Track location
