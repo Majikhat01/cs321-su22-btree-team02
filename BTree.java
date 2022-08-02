@@ -48,6 +48,10 @@ public class BTree {
         //Cache<BTreeNode> bTreeCache = new Cache<>();//Need to find max size
     }
 
+    BTreeCreate(T) {
+
+    }
+
     BTreeSearch(x,k) {
 
     }
@@ -57,6 +61,10 @@ public class BTree {
     }
 
     BTreeInsertNonfull(x,k) {
+
+    }
+
+    BTreeSplitRoot() {
 
     }
 
