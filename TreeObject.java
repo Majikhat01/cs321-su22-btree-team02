@@ -1,3 +1,5 @@
+import com.sun.source.tree.Tree;
+
 public class TreeObject {
 
     //Substring of DNA
@@ -8,6 +10,20 @@ public class TreeObject {
 
     public void incrementFrequency() {
         frequency ++;
+    }
+
+    public int getFrequency() {
+        return frequency;
+    }
+
+    public int compareTo(TreeObject compObject) {
+        if (DNA > compObject.getDNA()) {
+            return 1;
+        }
+        if (DNA < compObject.getDNA()) {
+            return -1;
+        }
+        return 0;
     }
 
     public TreeObject(long startDNA) {

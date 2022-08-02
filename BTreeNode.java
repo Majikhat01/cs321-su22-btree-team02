@@ -25,10 +25,12 @@ public class BTreeNode {
     }
 
     public int getKeys() {
+
         return n;
     }
 
     public long getLocation() {
+
         return location;
     }
 
