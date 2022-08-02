@@ -35,6 +35,8 @@ public class TreeObject {
         return DNA;
     }
 
+    public int getFrequency() { return frequency; }
+
     public String toString() {
         String stringDNA = Long.toString(DNA);
         StringBuilder returnDNA = new StringBuilder();

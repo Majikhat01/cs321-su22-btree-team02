@@ -1,3 +1,4 @@
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 
 public class BTreeNode {
@@ -15,6 +16,7 @@ public class BTreeNode {
 
     private long[] children;
 
+    // t = degree
     public BTreeNode(long location, int t) {
         this.location = location;
         n = 0;
@@ -48,7 +50,7 @@ public class BTreeNode {
 
     public byte[] serialize() {
         ByteBuffer bb = ByteBuffer.allocate();//pass in the amount of bytes each BTreeNode is gonna be
-
+        RandomAccessFile.seek(location);
     }
 
     public BTreeNode(ByteBuffer bb) {

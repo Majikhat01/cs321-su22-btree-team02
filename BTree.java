@@ -1,5 +1,7 @@
+import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 
 public class BTree {
 
@@ -46,6 +48,80 @@ public class BTree {
         Cache<BTreeNode> bTreeCache = new Cache<>();//Need to find max size
     }
 
+    //BTreeNode Start
+    public class BTreeNode {
 
+        //Track location
+        private long location;
 
+        //# of keys
+        private int numKeys;
+
+        //check if node is a leaf
+        private boolean leaf;
+
+        private TreeObject[] keys;
+
+        private long[] children;
+
+        // t = degree
+        public BTreeNode(long location, int t) {
+            this.location = location;
+            n = 0;
+            leaf = false;
+
+            keys = new TreeObject[(2*t) -1];
+            children = new long[(2*t)];
+        }
+
+        public int getKeys() {
+            return n;
+        }
+
+        public long getLocation() {
+            return location;
+        }
+
+        public boolean isLeaf() {
+            return leaf;
+        }
+
+        public int setDegree(int n) {
+            return degree = n;
+        }
+
+        public void setLeaf(boolean value) {
+            leaf = value;
+        }
+
+        public void setChild(long fileLocation, int index) {
+            children[index] = fileLocation;
+        }
+
+        public byte[] serialize() throws IOException {
+            ByteBuffer bb = ByteBuffer.allocate(4 + 8 + (12 * ((2 * degree) - 1) + (2 * degree)));//pass in the amount of bytes each BTreeNode is gonna be
+            bb.putInt(n);
+            bb.put((byte)15); //put into if (leaf = 15 otherwise 0)
+            for (int i = 1; i <= n; i++) {
+                bb.putLong(keys[i].getDNA());
+                bb.putInt(keys[i].getFrequency());
+            }
+            for (int i = 1; i <= n + 1; i++) {
+                bb.putLong(children[i]);
+            }
+
+            return bb.array();
+        }
+
+        public BTreeNode(ByteBuffer bb) {
+            degree = bb.getInt();
+            byte leafStatus = bb.get();
+            if (leafStatus == 15) {
+                leaf = true;
+            } else {
+                leaf = false;
+            }
+            numKeys = bb.getInt();
+        }
+    }
 }
