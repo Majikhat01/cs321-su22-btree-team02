@@ -48,27 +48,36 @@ public class BTree {
         //Cache<BTreeNode> bTreeCache = new Cache<>();//Need to find max size
     }
 
-    BTreeCreate(T) {
+
+
+    BTreeSearch(BTreeNode x, int k) {
+        i = 1;
+
+        while (i <= x.n)
+    }
+
+    BTreeInsert(int k) {
 
     }
 
-    BTreeSearch(x,k) {
+    BTreeInsertNonfull(BTreeNode x, int k) {
 
     }
 
-    BTreeInsert(long DNAStrand) {
+    BTreeSplitRoot(BTree T) {
 
     }
 
-    BTreeInsertNonfull(x,k) {
+    BTreeSplitChild(BTreeNode x, int i, int y) {
 
     }
 
-    BTreeSplitRoot() {
+    BTreeDump(BTree T) {
 
     }
 
-    BTreeSplitChild(x,i,y) {
+    //constructor
+    BTreeCreate(BTree T) {
 
     }
 
