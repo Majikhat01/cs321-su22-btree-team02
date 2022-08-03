@@ -1,4 +1,3 @@
-import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
@@ -50,12 +49,25 @@ public class BTree {
 
 
 
-    BTreeSearch(BTreeNode x, int k) {
-        i = 1;
+    public int BTreeSearch(BTreeNode x, long k) {
+        int i = 1;
 
-        while (i <= x.n)
+        while (i <= x.getKeys() && k > x.keys[i].getDNA()) {
+            i++;
+        }
+
+        if (i <= x.getKeys() && k == x.keys[i].getDNA()) {
+            return x.keys[i].getFrequency();
+        } else if (x.leaf) {
+            return -1;
+        } else {
+            BTreeNode child = DiskRead(x.children[i]);
+            return BTreeSearch(child, k);
+        }
     }
 
+    // be careful not to add duplicate keys for Insert and Nonfull
+    // if key to be inserted is a duplicate, just increment frequency
     BTreeInsert(int k) {
 
     }
