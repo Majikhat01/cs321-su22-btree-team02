@@ -3,10 +3,11 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
-public class GeneBankCreateBTree {
+public class GeneBankCreateBTree 
+{
     public static void main(String args[]) {
 
-        System.out.println("The hardest part of any journey is the first step!");
+        //System.out.println("The hardest part of any journey is the first step!");
 
         //This will need to contain the command line arguments
         //todo: check # and accuracy of arguments
@@ -32,15 +33,30 @@ public class GeneBankCreateBTree {
             debugLevel = Integer.parseInt(args[4]);
         }
 
+
+
+        //todo: initialize a btree with commandline parameters
+        //BTree newTree = null;
+
         //todo: write debug level support
+
+
+        //try to parse file and insert long dna into the btree
         try
         {
-            long scannedDNA = scanDNA(gbkFile, sequenceLength);
+            scanDNA(gbkFile, sequenceLength); //add btree as a paramater
+            if (debugLevel == 1)
+            {
+                //todo: call dump method
+            }
+
         }
         catch (FileNotFoundException e)
         {
             e.printStackTrace(); //might want to chance that depending on debug support
         }
+
+
 
 
     }
@@ -56,13 +72,13 @@ public class GeneBankCreateBTree {
         System.exit(i);
     }
 
-    //Need to scan and avoid all patterns until we reach ORIGIN
-    //Then scan line by line
-    public static long scanDNA(File file, int sequenceLength) throws FileNotFoundException //change return type
+
+    //scan file, discard text before origin, parse dna, insert long dna into btree
+    public static void scanDNA(File file, int sequenceLength) throws FileNotFoundException //add btree as a parameter
     {
         long dna = 0;
-        String[] subLenK = new String[100];
-        int index = 0;
+       // String[] subLenK = new String[100];
+       // int index = 0;
 
         Scanner scan = new Scanner(file);
         scan.useDelimiter("ORIGIN");
@@ -79,22 +95,61 @@ public class GeneBankCreateBTree {
                 String currentString = DNAArray[i];
                 while(currentString.length() >= sequenceLength)
                 {
+                    //make sub a long and insert it into the btree
                     String sub = currentString.substring(0, sequenceLength-1);
                     currentString = currentString.substring(1);
-                    subLenK[index] = sub;
-                    index++;
+                    long DNALong = stringToLong(sub); //todo: insert dnalong into btree
+                    System.out.println("\n\n sub: " + sub);
+
+                   // subLenK[index] = sub; 
+                   // index++;
                 }
 
             }
             scan.useDelimiter("ORIGIN");
 
         }
+        scan.close();
+
+    }
+
+
+    public static long stringToLong(String subSequence)
+    {
+        long retval = 0;
+        for (int i=0; i<subSequence.length()-1; i++)
+        {
+            char letter = subSequence.charAt(i);
+            retval += charToNum(letter);
+            retval = retval << 2;
+        }
+        char letter = subSequence.charAt(subSequence.length()-1);
+        retval += charToNum(letter);
 
 
 
 
+        return retval;
+    }
 
+    public static long charToNum(char letter)
+    {
+        long num = 0;
+        //letter will be uppercase
 
-        return dna;
+        if(letter == 'C')
+        {
+            num=1;
+        }
+        if(letter == 'G')
+        {
+            num = 2;
+        }
+        if(letter == 'T')
+        {
+            num = 3;
+        }
+
+        return num;
     }
 }
