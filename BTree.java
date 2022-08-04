@@ -172,12 +172,9 @@ public class BTree {
     }
 
     public int calculateOptimumDegree() {
-        //(2t-1)NodeSize + (2t+1)Pointer <= 4096 - MD
-        //2tNodeSize + 2tPoint <= (4096 - MD + NodeSize - Pointer) (Divide by underneath)
-        //t   =                        (2nodeSize + 2Pointer)
-        int optimalDegree;
+        //NodeSize <= 4096
 
-        optimalDegree = 107;
+        int optimalDegree = (int)Math.floor(4103/40);
 
         return optimalDegree;
     }
