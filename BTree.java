@@ -91,10 +91,38 @@ public class BTree {
 
     public void BTreeSplitRoot(BTree T) {
     //We will call write root in this to update the root
+        /*
+            s = allocat-node()
+            s.leaf = false
+            s.n = 0
+            s.c1 = T.root
+            T.root = s
+            B-Tree-Split-Child(s, 1)
+            return s
+         */
     }
 
     public void BTreeSplitChild(BTreeNode x, int i, int y) {
 
+        /*
+            y = ci
+            z = allocat-node()
+            z.leaf = y.leaf
+            z.n = t-1
+            for j = 1 to t -1
+                z.key = y.keyj+t
+            if not y.leaf
+                for j = 1 to t
+                    z.cj = y.cj+t
+            y.n = t-1
+            for j = x.n + 1 downto i + 1
+                x.cj+1 = x.cj
+            x.keyi+1 = x.keyj
+            x.n = x.n +1
+            DiskWrite(y)
+            DiskWrite(z)
+            DiskWrite(x)
+         */
     }
 
     public void BTreeDump(BTree T) {
@@ -139,7 +167,7 @@ public class BTree {
         //t   =                        (2nodeSize + 2Pointer)
         int optimalDegree;
 
-        optimalDegree = (4096 - 16 + )
+        optimalDegree = 107;
 
         return optimalDegree;
     }
@@ -214,8 +242,8 @@ public class BTree {
         }
 
         public byte[] serialize() {
-//            int localVar = 4 + 8 + (12 * ((2 * degree) - 1) + (2 * degree));
-            ByteBuffer bb = ByteBuffer.allocate(4 + 1 + 12 * (2 * degree - 1) + 8 * (2 * degree));
+            int nodeSize = 4 + 1 + 12 * (2 * degree - 1) + 8 * (2 * degree);
+            ByteBuffer bb = ByteBuffer.allocate(nodeSize);
             bb.putInt(numKeys);
 
             //this inputs '1111' if true and '0000' if false into bb so that
