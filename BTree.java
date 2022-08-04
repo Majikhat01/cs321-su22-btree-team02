@@ -24,9 +24,12 @@ public class BTree {
     private RandomAccessFile byteFile;
 
     //Offset of BTreeNode in the byteArray
-    private long rootOffSet;
+    private long rootOffSet ;
 
     private int nodeSize = 4 + 1 + 12 * (2 * degree - 1) + 8 * (2 * degree);
+
+    // maintains the end of file
+    private long EOFPointer;
 
     //Need to serialize Btree
     public void BTreeCreate(int k, int t, String fileName) throws FileNotFoundException {
@@ -48,6 +51,7 @@ public class BTree {
         //Specify location in the RAF for next address
     }
 
+    // class constructor
     public BTree(int k, int t, int cacheSize) {
         seqLength = k;
         degree = t;
@@ -97,14 +101,14 @@ public class BTree {
 
     }
 
-    public void diskWrite(BTreeNode x) {
+    public void diskWrite(RandomAccessFile pointer) throws IOException{
         //Take a BTreeNode and serialize it and then write that information to the RAF
-
     }
 
-    public BTreeNode diskRead(long x) {
-        //Read information from the RAF and return a BTreeNode
-    }
+//    public BTreeNode diskRead(long x, RandomAccessFile pointer) throws IOException {
+//        //Read information from the RAF and return a BTreeNode
+//
+//    }
 
     public void writeMD() {
         ByteBuffer bb = ByteBuffer.allocate(16);
@@ -189,6 +193,24 @@ public class BTree {
 
         public void setChild(long fileLocation, int index) {
             children[index] = fileLocation;
+        }
+
+        public void diskWrite(RandomAccessFile pointer) throws IOException{
+            //Take a BTreeNode and serialize it and then write that information to the RAF
+
+            pointer.seek(getLocation());
+            pointer.writeInt(numKeys);
+
+            pointer.writeInt(leaf? 1:0);
+
+            for (int i = 1; i <= numKeys; i++) {
+                pointer.writeLong(keys[i].getDNA());
+                pointer.writeInt(keys[i].getFrequency());
+            }
+
+            for (int i = 1; i <= numKeys + 1; i++) {
+                pointer.writeLong(children[i]);
+            }
         }
 
         public byte[] serialize() {
