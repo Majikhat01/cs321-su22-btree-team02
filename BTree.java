@@ -69,7 +69,7 @@ public class BTree {
         } else if (x.leaf) {
             return -1;
         } else {
-            BTreeNode child = DiskRead(x.children[i]);
+            BTreeNode child = diskRead(x.children[i]);
             return BTreeSearch(child, k);
         }
     }
@@ -78,29 +78,31 @@ public class BTree {
     // if key to be inserted is a duplicate, just increment frequency
     public void BTreeInsert(int k) {
 
-    }
-
-    BTreeInsertNonfull(BTreeNode x, int k) {
 
     }
 
-    BTreeSplitRoot(BTree T) {
+    public void BTreeInsertNonfull(BTreeNode x, int k) {
+
+    }
+
+    public void BTreeSplitRoot(BTree T) {
     //We will call write root in this to update the root
     }
 
-    BTreeSplitChild(BTreeNode x, int i, int y) {
+    public void BTreeSplitChild(BTreeNode x, int i, int y) {
 
     }
 
-    BTreeDump(BTree T) {
+    public void BTreeDump(BTree T) {
 
     }
 
-    public void diskWrite() {
+    public void diskWrite(BTreeNode x) {
         //Take a BTreeNode and serialize it and then write that information to the RAF
+
     }
 
-    public BTreeNode diskRead() {
+    public BTreeNode diskRead(long x) {
         //Read information from the RAF and return a BTreeNode
     }
 
@@ -193,11 +195,15 @@ public class BTree {
 //            int localVar = 4 + 8 + (12 * ((2 * degree) - 1) + (2 * degree));
             ByteBuffer bb = ByteBuffer.allocate(4 + 1 + 12 * (2 * degree - 1) + 8 * (2 * degree));
             bb.putInt(numKeys);
+
+            //this inputs '1111' if true and '0000' if false into bb so that
+            // leaf can be either toggled on or off when reading bb.
             if (leaf) {
                 bb.put((byte)15); //Ask Calving about this
             } else {
                 bb.put((byte)0);
             }
+
             for (int i = 1; i <= numKeys; i++) {
                 bb.putLong(keys[i].getDNA());
                 bb.putInt(keys[i].getFrequency());
