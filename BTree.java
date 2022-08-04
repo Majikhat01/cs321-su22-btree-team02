@@ -60,7 +60,6 @@ public class BTree {
     }
 
 
-
     public int BTreeSearch(BTreeNode x, long k) {
         int i = 1;
 
@@ -129,14 +128,19 @@ public class BTree {
 
     }
 
-    public void diskWrite(RandomAccessFile pointer) throws IOException{
+    public void diskWrite(BTreeNode node) throws IOException{
         //Take a BTreeNode and serialize it and then write that information to the RAF
+        byteFile.seek(node.getLocation());
+        byteFile.write(node.serialize());
     }
 
-//    public BTreeNode diskRead(long x, RandomAccessFile pointer) throws IOException {
-//        //Read information from the RAF and return a BTreeNode
-//
-//    }
+    public BTreeNode diskRead(long nodeAddress) throws IOException {
+        //Read information from the RAF and return a BTreeNode
+        byteFile.seek(nodeAddress);
+        ByteBuffer bb = ByteBuffer.allocate(nodeSize);
+        byteFile.read(bb.array());
+        return new BTreeNode(bb);
+    }
 
     public void writeMD() {
         ByteBuffer bb = ByteBuffer.allocate(16);
@@ -223,33 +227,14 @@ public class BTree {
             children[index] = fileLocation;
         }
 
-        public void diskWrite(RandomAccessFile pointer) throws IOException{
-            //Take a BTreeNode and serialize it and then write that information to the RAF
-
-            pointer.seek(getLocation());
-            pointer.writeInt(numKeys);
-
-            pointer.writeInt(leaf? 1:0);
-
-            for (int i = 1; i <= numKeys; i++) {
-                pointer.writeLong(keys[i].getDNA());
-                pointer.writeInt(keys[i].getFrequency());
-            }
-
-            for (int i = 1; i <= numKeys + 1; i++) {
-                pointer.writeLong(children[i]);
-            }
-        }
-
         public byte[] serialize() {
-            int nodeSize = 4 + 1 + 12 * (2 * degree - 1) + 8 * (2 * degree);
-            ByteBuffer bb = ByteBuffer.allocate(nodeSize);
+            ByteBuffer bb = ByteBuffer.allocate(4 + 1 + 12 * (2 * degree - 1) + 8 * (2 * degree));
             bb.putInt(numKeys);
 
             //this inputs '1111' if true and '0000' if false into bb so that
             // leaf can be either toggled on or off when reading bb.
             if (leaf) {
-                bb.put((byte)15); //Ask Calving about this
+                bb.put((byte)15);
             } else {
                 bb.put((byte)0);
             }
@@ -265,8 +250,7 @@ public class BTree {
             return bb.array();
         }
 
-        public BTreeNode(ByteBuffer bb, int t) {
-            degree = t;
+        public BTreeNode(ByteBuffer bb) {
             numKeys = bb.getInt();
             byte leafStatus = bb.get();
             leaf = leafStatus == 15;
