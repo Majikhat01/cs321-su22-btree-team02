@@ -1,4 +1,5 @@
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 
@@ -23,21 +24,28 @@ public class BTree {
     private RandomAccessFile byteFile;
 
     //Offset of BTreeNode in the byteArray
-    private int offSetValue;
+    private long rootOffSet;
+
+    private int nodeSize = 4 + 1 + 12 * (2 * degree - 1) + 8 * (2 * degree);
 
     //Need to serialize Btree
-    public BTree(int k, int t, String fileName) throws FileNotFoundException {
+    public void BTreeCreate(int k, int t, String fileName) throws FileNotFoundException {
         seqLength = k;
         degree = t;
-        RandomAccessFile byteFile = new RandomAccessFile(fileName,"rw");
 
-        offSetValue = 1000; //calculate by hand the size of each BTreeNode by terms of the degree
+        if (degree == 0) {
+            calculateOptimumDegree;
+        }
+        byteFile = new RandomAccessFile(fileName,"rw");
+
+        //Write the metedata
+        //MetaData = degree + seqLength + rootOffeSet
+        writeMD();
+        //calculate by hand the size of each BTreeNode by terms of the degree
         // (2t-1)
         //allocate the first address to 0 then we will allocate by the offSetValue for each new BTreeNode
 
         //Specify location in the RAF for next address
-
-
     }
 
     public BTree(int k, int t, int cacheSize) {
@@ -68,7 +76,7 @@ public class BTree {
 
     // be careful not to add duplicate keys for Insert and Nonfull
     // if key to be inserted is a duplicate, just increment frequency
-    BTreeInsert(int k) {
+    public void BTreeInsert(int k) {
 
     }
 
@@ -77,7 +85,7 @@ public class BTree {
     }
 
     BTreeSplitRoot(BTree T) {
-
+    //We will call write root in this to update the root
     }
 
     BTreeSplitChild(BTreeNode x, int i, int y) {
@@ -88,9 +96,46 @@ public class BTree {
 
     }
 
-    //constructor
-    BTreeCreate(BTree T) {
+    public void diskWrite() {
+        //Take a BTreeNode and serialize it and then write that information to the RAF
+    }
 
+    public BTreeNode diskRead() {
+        //Read information from the RAF and return a BTreeNode
+    }
+
+    public void writeMD() {
+        ByteBuffer bb = ByteBuffer.allocate(16);
+        bb.putLong(rootOffSet);
+        bb.putInt(seqLength);
+        bb.putInt(degree);
+        try {
+            byteFile.write(bb.array());
+        } catch(IOException e) {
+            System.out.println(e.toString());
+        }
+    }
+
+    public void setRoot(long rootOffSet) {
+        ByteBuffer bb = ByteBuffer.allocate(8);
+        bb.putLong(rootOffSet);
+        try {
+            byteFile.seek(0);
+            byteFile.write(bb.array());
+        } catch(IOException e) {
+            System.out.print(e.toString());
+        }
+    }
+
+    public int calculateOptimumDegree() {
+        //(2t-1)NodeSize + (2t+1)Pointer <= 4096 - MD
+        //2tNodeSize + 2tPoint <= (4096 - MD + NodeSize - Pointer) (Divide by underneath)
+        //t   =                        (2nodeSize + 2Pointer)
+        int optimalDegree;
+
+        optimalDegree = (4096 - 16 + )
+
+        return optimalDegree;
     }
 
 
@@ -145,11 +190,11 @@ public class BTree {
         }
 
         public byte[] serialize() {
-            int localVar = 4 + 8 + (12 * ((2 * degree) - 1) + (2 * degree));
+//            int localVar = 4 + 8 + (12 * ((2 * degree) - 1) + (2 * degree));
             ByteBuffer bb = ByteBuffer.allocate(4 + 1 + 12 * (2 * degree - 1) + 8 * (2 * degree));
             bb.putInt(numKeys);
             if (leaf) {
-                bb.put((byte)15);
+                bb.put((byte)15); //Ask Calving about this
             } else {
                 bb.put((byte)0);
             }
