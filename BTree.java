@@ -65,13 +65,13 @@ public class BTree {
 
     // be careful not to add duplicate keys for Insert and Nonfull
     // if key to be inserted is a duplicate, just increment frequency
-    public void BTreeInsert(long k) {
+    public void BTreeInsert(long k) throws IOException {
 
         BTreeNode r = root;
-        if (r.getKeys() == (2*degree-1)) {
+        if (r.getKeys() == ((2 * degree) - 1)) {
             BTreeNode s = new BTreeNode(nextAddress);
             nextAddress = nextAddress + nodeSize; //allocate node
-            r = s;
+            this.root = s;
             s.setLeaf(false);
             s.setKeys(0);
             s.children[1] = r.getLocation();
@@ -84,44 +84,108 @@ public class BTree {
         }
     }
 
-    public void BTreeInsertNonfull(BTreeNode x, long k) {
+    public void BTreeInsertNonfull(BTreeNode x, long k) throws IOException {
+        int i = x.numKeys;
+        int j = i;
 
+        while (j >= 1 && k < x.keys[j].getDNA()) {
+            j--;
+        }
+
+        if (x.leaf) {
+
+            //checks for duplicate keys before inserting
+            if (j > 0 && k == x.keys[j].getDNA()) {
+                x.keys[j].setFrequency(x.keys[j].getFrequency() + 1);
+                diskWrite(x);
+                return;
+            }
+
+            while (i >= 1 && k < x.keys[i].getDNA()) {
+                x.keys[i + 1] = x.keys[i];
+                i--;
+            }
+
+            BTreeInsert(k);
+            x.numKeys = x.numKeys + 1;
+            diskWrite(x);
+        } else {
+            while (i >= 1 && k < x.keys[i].getDNA()) {
+                i--;
+            }
+
+            i++;
+            BTreeNode child = diskRead(x.children[i]);
+
+            if (child.numKeys == (2 * degree) - 1) {
+                BTreeSplitChild(x, i, child);
+
+                //checks for duplicate keys before inserting
+                if (j > 0 && k == x.keys[j].getDNA()) {
+                    x.keys[j].setFrequency(x.keys[j].getFrequency() + 1);
+                    diskWrite(x);
+                    return;
+                }
+
+                if (k > x.keys[i].getDNA()) {
+                    i++;
+                }
+
+                //update the child node to be inserted
+                child = diskRead(x.children[i]);
+            }
+
+            BTreeInsertNonfull(child, k);
+        }
     }
 
-    public void BTreeSplitRoot(BTree T) {
+    public BTreeNode BTreeSplitRoot(BTree T) throws IOException {
     //We will call write root in this to update the root
-        /*
-            s = allocat-node()
-            s.leaf = false
-            s.n = 0
-            s.c1 = T.root
-            T.root = s
-            B-Tree-Split-Child(s, 1)
-            return s
-         */
+        BTreeNode s = new BTreeNode(nextAddress);
+        nextAddress = nextAddress + nodeSize;
+        BTreeNode r = new BTreeNode(nextAddress);
+        nextAddress = nextAddress + nodeSize;
+        s.leaf = false;
+        s.numKeys = 0;
+        s.children[1] = T.rootOffSet;
+        T.root = s;
+        BTreeSplitChild(s, 1, r);
+        return s;
     }
 
-    public void BTreeSplitChild(BTreeNode x, int i, BTreeNode y) {
+    public void BTreeSplitChild(BTreeNode x, int i, BTreeNode y) throws IOException {
 
-        /*
-            y = ci
-            z = allocat-node()
-            z.leaf = y.leaf
-            z.n = t-1
-            for j = 1 to t -1
-                z.key = y.keyj+t
-            if not y.leaf
-                for j = 1 to t
-                    z.cj = y.cj+t
-            y.n = t-1
-            for j = x.n + 1 downto i + 1
-                x.cj+1 = x.cj
-            x.keyi+1 = x.keyj
-            x.n = x.n +1
-            DiskWrite(y)
-            DiskWrite(z)
-            DiskWrite(x)
-         */
+        BTreeNode z = new BTreeNode(nextAddress);
+        nextAddress = nextAddress + nodeSize;
+        y = new BTreeNode(x.children[i]);
+        z.leaf = y.leaf;
+        z.numKeys = degree - 1;
+
+        for (int j = 1; j < degree - 1; j++) {
+            z.keys[j] = y.keys[j + degree];
+            if (!y.leaf) {
+                for (j = 1; j < degree; j++) {
+                    z.children[j] = y.children[j + 1];
+                }
+            }
+        }
+
+        y.numKeys = degree - 1;
+
+        for (int j = x.numKeys + 1; j > i + 1; j--) {
+            x.children[j + 1] = x.children[j];
+        }
+
+        x.children[i + 1] = z.location;
+
+        for (int j = x.numKeys; j > i; j--) {
+            x.keys[j + 1] = x.keys[j];
+        }
+
+        x.numKeys = x.numKeys + 1;
+        diskWrite(x);
+        diskWrite(y);
+        diskWrite(z);
     }
 
     public void DumpTree(BTreeNode x, PrintStream ps) throws IOException {
@@ -131,7 +195,7 @@ public class BTree {
             }
         } else {
             for (int i = 1; i < x.numKeys + 1; i++) {
-                BTreeNode child = new BTreeNode(x.children[i], degree);
+                BTreeNode child = new BTreeNode(x.children[i]);
                 DumpTree(child, ps);
                 ps.append(x.keys[i].toString() + "\n");
                 child = diskRead(x.children[x.numKeys + 1]);
@@ -140,7 +204,7 @@ public class BTree {
         }
     }
 
-    public void BTreeDump(String fileName, BTree T) throws FileNotFoundException {
+    public void BTreeDump(String fileName, BTree T) throws IOException {
         PrintStream ps = new PrintStream(new File(fileName));
         PrintStream Stdout = System.out;
         DumpTree(T.root, ps);

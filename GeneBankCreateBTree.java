@@ -37,7 +37,7 @@ public class GeneBankCreateBTree
 
 
         //todo: initialize a btree with commandline parameters
-        //BTree newTree = null;
+        BTree newTree = null;
 
         //todo: write debug level support
 
@@ -45,7 +45,7 @@ public class GeneBankCreateBTree
         //try to parse file and insert long dna into the btree
         try
         {
-            scanDNA(gbkFile, sequenceLength); //add btree as a paramater
+            scanDNA(gbkFile, newTree, sequenceLength);
             if (debugLevel == 1)
             {
                 //todo: call dump method
