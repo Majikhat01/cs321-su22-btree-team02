@@ -1,7 +1,57 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
 public class GeneBankSearchBTree {
     public static void main(String args[]) {
 
-        System.out.println("The hardest part of any journey is the first step!");
+        //todo: check # and accuracy of arguments
+
+        //assign arguments to variables
+        int cache = Integer.parseInt(args[0]);
+        String BTreeFile = new String(args[1]);
+        File queryFile = new File(args[2]);
+        int cacheSize = 0;
+        int debugLevel = 0;
+
+        if (cache == 1)
+        {
+            cacheSize = Integer.parseInt(args[3]);
+            if(args.length == 4)
+            {
+                debugLevel = Integer.parseInt(args[4]);
+            }
+        }
+        else if (cache == 0 && args.length == 3)
+        {
+            debugLevel = Integer.parseInt(args[4]);
+        }
+
+
+
+        //todo: initialize a btree with commandline parameters
+        //BTree newTree = null;
+
+        //todo: write debug level support
+
+
+        //try to parse file
+        try
+        {
+            Scanner scan = new Scanner(queryFile);
+            while(scan.hasNextLine())
+            {
+                String query = scan.nextLine();
+                
+                long searchKey = GeneBankCreateBTree.stringToLong(query);
+                //call btree search(search key)
+            }
+
+        }
+        catch(FileNotFoundException e)
+        {
+
+        }
 
     }
 

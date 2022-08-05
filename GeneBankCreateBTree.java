@@ -4,14 +4,22 @@ import java.io.IOException;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
+import javax.lang.model.util.ElementScanner6;
+
 public class GeneBankCreateBTree 
 {
-    public static void main(String args[]) {
+    public static void main(String args[])
+    {
 
         //System.out.println("The hardest part of any journey is the first step!");
 
         //This will need to contain the command line arguments
         //todo: check # and accuracy of arguments
+
+        if(args.length < 5)
+        {
+            printUsageAndExit("Not enough arguments", 1);
+        }
 
         //assign arguments to variables
         int cache = Integer.parseInt(args[0]);
@@ -33,6 +41,32 @@ public class GeneBankCreateBTree
         {
             debugLevel = Integer.parseInt(args[4]);
         }
+        else
+        {
+            printUsageAndExit("cache argument should be 0 or 1", 1);
+        }
+
+        //todo: calculate degree
+
+        //error checks
+        if (cacheSize < 0)
+        {
+            printUsageAndExit("cache size should be positive", 1);
+        }
+        if (degree < 2)
+        {
+            printUsageAndExit("degree argument should be >= 2", 1);
+        }
+        if (sequenceLength < 1 || sequenceLength > 31)
+        {
+            String message = ("sequence length argument should be greater than or equal to 1"
+            + "and less than or equal to 31");
+            printUsageAndExit(message, 1);
+        }
+        if (debugLevel !=0 || debugLevel !=1)
+        {
+            printUsageAndExit("debug level argument should be 0 or 1", 1);
+        }
 
 
 
@@ -45,16 +79,17 @@ public class GeneBankCreateBTree
         //try to parse file and insert long dna into the btree
         try
         {
-            scanDNA(gbkFile, newTree, sequenceLength);
-            if (debugLevel == 1)
-            {
-                //todo: call dump method
-            }
-
+            scanDNA(gbkFile, sequenceLength); //todo: add btree as a paramater
         }
         catch (IOException e)
         {
             e.printStackTrace(); //might want to chance that depending on debug support
+        }
+
+        if (debugLevel == 1)
+        {
+            String dumpName = (args[2] + "btree.dump." + sequenceLength);
+            //newTree.dump(dumpName)
         }
 
 
@@ -65,7 +100,7 @@ public class GeneBankCreateBTree
     public static void printUsageAndExit(String message, int i) {
         System.out.println(message);
         System.out.println("java GeneBankCreateBTree <0/1(no/with Cache)> <degree> <gbk file> <sequence length> [<cache size>] [<debug level>]");
-        System.exit(i);
+        System.exit(i); //0 means no error, another number (1) means error
     }
 
     public static void printUsageAndExit(int i) {
@@ -133,9 +168,7 @@ public class GeneBankCreateBTree
         char letter = subSequence.charAt(subSequence.length()-1);
         retval += charToNum(letter);
 
-
-
-
+        System.out.println("retval: " + retval);
         return retval;
     }
 
@@ -144,15 +177,15 @@ public class GeneBankCreateBTree
         long num = 0;
         //letter will be uppercase
 
-        if(letter == 'C')
+        if(letter == 'C' || letter == 'c')
         {
             num=1;
         }
-        if(letter == 'G')
+        if(letter == 'G' || letter == 'g')
         {
             num = 2;
         }
-        if(letter == 'T')
+        if(letter == 'T' || letter == 't')
         {
             num = 3;
         }
