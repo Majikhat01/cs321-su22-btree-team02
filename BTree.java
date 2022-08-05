@@ -39,6 +39,11 @@ public class BTree {
         root = new BTreeNode(rootOffSet);
         seqLength = k;
         degree = t;
+
+        if (degree == 0) {
+            degree = calculateOptimumDegree();
+        }
+
         nodeSize = 4 + 1 + 12 * (2 * degree - 1) + 8 * (2 * degree);
         nextAddress = rootOffSet + nodeSize;
         this.cacheSize = cacheSize;
