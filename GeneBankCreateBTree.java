@@ -52,7 +52,7 @@ public class GeneBankCreateBTree
             }
 
         }
-        catch (FileNotFoundException e)
+        catch (IOException e)
         {
             e.printStackTrace(); //might want to chance that depending on debug support
         }
@@ -75,7 +75,7 @@ public class GeneBankCreateBTree
 
 
     //scan file, discard text before origin, parse dna, insert long dna into btree
-    public static void scanDNA(File file, BTree tree, int sequenceLength) throws IOException //add btree as a parameter
+    public static void scanDNA(File file, int sequenceLength) throws IOException //add btree as a parameter
     {
         long dna = 0;
        // String[] subLenK = new String[100];
@@ -87,9 +87,12 @@ public class GeneBankCreateBTree
         while (scan.hasNext())
         {
             String unwanted = scan.next();
+
             scan.useDelimiter("//");
+            if (scan.hasNext())
+            {
             String messyDNAChunck = scan.next();
-            String DNAChunk = messyDNAChunck.replaceAll("(\\n)(\\s)[0-9]", "");
+            String DNAChunk = messyDNAChunck.replaceAll("ORIGIN|\\n|\\s|[0-9]", "");
             String[] DNAArray = DNAChunk.split("n+"); //one or more ns
             for (int i = 0; i< DNAArray.length; i++)
             {
@@ -97,22 +100,24 @@ public class GeneBankCreateBTree
                 while(currentString.length() >= sequenceLength)
                 {
                     //make sub a long and insert it into the btree
-                    String sub = currentString.substring(0, sequenceLength-1);
+                    String sub = currentString.substring(0, sequenceLength); //ceiling is exclusive
                     currentString = currentString.substring(1);
-                    long DNALong = stringToLong(sub); //todo: insert dnalong into btree
-                    System.out.println("\n\n sub: " + sub);
+                    long DNALong = stringToLong(sub); 
+                    System.out.println("sub: " + sub);
 
                     //subLenK[index] = sub;
                     //index++;
-                    tree.BTreeInsert(DNALong);
+                    //tree.BTreeInsert(DNALong);
                 }
+            }
 
             }
             scan.useDelimiter("ORIGIN");
 
+
         }
         scan.close();
-        tree.writeMD();
+       // tree.writeMD();
     }
 
 
