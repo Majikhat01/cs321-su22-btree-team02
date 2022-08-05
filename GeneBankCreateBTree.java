@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
@@ -74,7 +75,7 @@ public class GeneBankCreateBTree
 
 
     //scan file, discard text before origin, parse dna, insert long dna into btree
-    public static void scanDNA(File file, int sequenceLength) throws FileNotFoundException //add btree as a parameter
+    public static void scanDNA(File file, BTree tree, int sequenceLength) throws IOException //add btree as a parameter
     {
         long dna = 0;
        // String[] subLenK = new String[100];
@@ -101,8 +102,9 @@ public class GeneBankCreateBTree
                     long DNALong = stringToLong(sub); //todo: insert dnalong into btree
                     System.out.println("\n\n sub: " + sub);
 
-                   // subLenK[index] = sub; 
-                   // index++;
+                    //subLenK[index] = sub;
+                    //index++;
+                    tree.BTreeInsert(DNALong);
                 }
 
             }
@@ -110,7 +112,7 @@ public class GeneBankCreateBTree
 
         }
         scan.close();
-
+        tree.writeMD();
     }
 
 

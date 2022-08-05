@@ -1,12 +1,13 @@
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.nio.ByteBuffer;
 
 public class BTree {
 
+    //Offset of BTreeNode in the byteArray
+    private long rootOffSet = 16;
+
     //Need root which is reference to byte address
-    private long root;
+    private BTreeNode root;
 
     //K = substring length
     private int seqLength;
@@ -23,8 +24,8 @@ public class BTree {
     //RAF to create new file to store all BTree information
     private RandomAccessFile byteFile;
 
-    //Offset of BTreeNode in the byteArray
-    private long rootOffSet ;
+
+
 
     private int nodeSize = 4 + 1 + 12 * (2 * degree - 1) + 8 * (2 * degree);
 
@@ -32,27 +33,11 @@ public class BTree {
     private long EOFPointer;
 
     //Need to serialize Btree
-    public void BTreeCreate(int k, int t, String fileName) throws FileNotFoundException {
-        seqLength = k;
-        degree = t;
-
-        if (degree == 0) {
-            calculateOptimumDegree;
-        }
-        byteFile = new RandomAccessFile(fileName,"rw");
-
-        //Write the metedata
-        //MetaData = degree + seqLength + rootOffeSet
-        writeMD();
-        //calculate by hand the size of each BTreeNode by terms of the degree
-        // (2t-1)
-        //allocate the first address to 0 then we will allocate by the offSetValue for each new BTreeNode
-
-        //Specify location in the RAF for next address
-    }
 
     // class constructor
-    public BTree(int k, int t, int cacheSize) {
+    public BTree(String fileName, int k, int t, int cacheSize) throws FileNotFoundException {
+        byteFile = new RandomAccessFile(fileName, "rw");
+        root = new BTreeNode(rootOffSet);
         seqLength = k;
         degree = t;
         this.cacheSize = cacheSize;
@@ -60,7 +45,7 @@ public class BTree {
     }
 
 
-    public int BTreeSearch(BTreeNode x, long k) {
+    public int BTreeSearch(BTreeNode x, long k) throws IOException {
         int i = 1;
 
         while (i <= x.getKeys() && k > x.keys[i].getDNA()) {
@@ -79,7 +64,7 @@ public class BTree {
 
     // be careful not to add duplicate keys for Insert and Nonfull
     // if key to be inserted is a duplicate, just increment frequency
-    public void BTreeInsert(int k) {
+    public void BTreeInsert(long k) {
 
 
     }
@@ -124,8 +109,28 @@ public class BTree {
          */
     }
 
-    public void BTreeDump(BTree T) {
+    public void DumpTree(BTreeNode x, PrintStream ps) throws IOException {
+        if (x.isLeaf()) {
+            for (int i = 1; i < x.numKeys; i++) {
+                ps.append(x.keys[i].toString() + "\n");
+            }
+        } else {
+            for (int i = 1; i < x.numKeys + 1; i++) {
+                BTreeNode child = new BTreeNode(x.children[i], degree);
+                DumpTree(child, ps);
+                ps.append(x.keys[i].toString() + "\n");
+                child = diskRead(x.children[x.numKeys + 1]);
+                DumpTree(child, ps);
+            }
+        }
+    }
 
+    public void BTreeDump(String fileName, BTree T) throws FileNotFoundException {
+        PrintStream ps = new PrintStream(new File(fileName));
+        PrintStream Stdout = System.out;
+        DumpTree(T.root, ps);
+        System.setOut(ps);
+        System.setOut(Stdout);
     }
 
     public void diskWrite(BTreeNode node) throws IOException{
@@ -142,8 +147,9 @@ public class BTree {
         return new BTreeNode(bb);
     }
 
-    public void writeMD() {
+    public void writeMD() throws IOException {
         ByteBuffer bb = ByteBuffer.allocate(16);
+        byteFile.seek((long)0);
         bb.putLong(rootOffSet);
         bb.putInt(seqLength);
         bb.putInt(degree);
@@ -194,13 +200,13 @@ public class BTree {
         private long[] children;
 
         // t = degree
-        public BTreeNode(long location, int t) {
+        public BTreeNode(long location) {
             this.location = location;
             numKeys = 0;
             leaf = false;
 
-            keys = new TreeObject[(2*t) -1];
-            children = new long[(2*t)];
+            keys = new TreeObject[(2 * degree)];
+            children = new long[(2 * degree) + 1];
         }
 
         public int getKeys() {
