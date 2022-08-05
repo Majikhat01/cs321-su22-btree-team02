@@ -21,11 +21,10 @@ public class BTree {
     //Cache
     private Cache cache;
 
+    private long nextAddress;
+
     //RAF to create new file to store all BTree information
     private RandomAccessFile byteFile;
-
-
-
 
     private int nodeSize = 4 + 1 + 12 * (2 * degree - 1) + 8 * (2 * degree);
 
@@ -40,6 +39,8 @@ public class BTree {
         root = new BTreeNode(rootOffSet);
         seqLength = k;
         degree = t;
+        nodeSize = 4 + 1 + 12 * (2 * degree - 1) + 8 * (2 * degree);
+        nextAddress = rootOffSet + nodeSize;
         this.cacheSize = cacheSize;
         //Cache<BTreeNode> bTreeCache = new Cache<>();//Need to find max size
     }
@@ -66,10 +67,24 @@ public class BTree {
     // if key to be inserted is a duplicate, just increment frequency
     public void BTreeInsert(long k) {
 
+        BTreeNode r = root;
+        if (r.getKeys() == (2*degree-1)) {
+            BTreeNode s = new BTreeNode(nextAddress);
+            nextAddress = nextAddress + nodeSize; //allocate node
+            r = s;
+            s.setLeaf(false);
+            s.setKeys(0);
+            s.children[1] = r.getLocation();
 
+
+            BTreeSplitChild(s, 1, r);
+            BTreeInsertNonfull(s, k);
+        } else {
+            BTreeInsertNonfull(r, k);
+        }
     }
 
-    public void BTreeInsertNonfull(BTreeNode x, int k) {
+    public void BTreeInsertNonfull(BTreeNode x, long k) {
 
     }
 
@@ -86,7 +101,7 @@ public class BTree {
          */
     }
 
-    public void BTreeSplitChild(BTreeNode x, int i, int y) {
+    public void BTreeSplitChild(BTreeNode x, int i, BTreeNode y) {
 
         /*
             y = ci
@@ -160,15 +175,21 @@ public class BTree {
         }
     }
 
-    public void setRoot(long rootOffSet) {
+    public BTreeNode getRoot() {
+        return root;
+    }
+
+    public void setRoot() {
         ByteBuffer bb = ByteBuffer.allocate(8);
-        bb.putLong(rootOffSet);
+        bb.putLong(root.location);
         try {
             byteFile.seek(0);
             byteFile.write(bb.array());
         } catch(IOException e) {
             System.out.print(e.toString());
         }
+
+        //Call setRoot to update the final root value of where it's at one time finally in GeneBankCreateBTree
     }
 
     public int calculateOptimumDegree() {
@@ -208,6 +229,10 @@ public class BTree {
 
         public int getKeys() {
             return numKeys;
+        }
+
+        public void setKeys(int keySize) {
+             numKeys = keySize;
         }
 
         public long getLocation() {
