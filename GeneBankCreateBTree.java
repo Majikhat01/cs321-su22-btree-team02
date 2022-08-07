@@ -16,7 +16,7 @@ public class GeneBankCreateBTree
         //This will need to contain the command line arguments
         //todo: check # and accuracy of arguments
 
-        if(args.length < 5)
+        if(args.length < 4)
         {
             printUsageAndExit("Not enough arguments", 1);
         }
