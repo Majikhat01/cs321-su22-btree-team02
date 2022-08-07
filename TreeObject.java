@@ -36,6 +36,7 @@ public class TreeObject {
     }
 
     public long getDNA() {
+
         return DNA;
     }
 
