@@ -5,20 +5,51 @@ public class BTreeNodeTester {
 
     public static void main(String[] args) throws IOException {
         BTree newTree = new BTree("test", 2, 2, 0);
+        System.out.println("Inserting 1, 2, 3\n");
         newTree.BTreeInsert(1);
         newTree.BTreeInsert(2);
         newTree.BTreeInsert(3);
         System.out.print(newTree.getNodeAtIndex(1) + "\n");
+        System.out.println("Inserting 4\n");
         newTree.BTreeInsert(4);
         System.out.print(newTree.getNodeAtIndex(1) + "\n");
         System.out.print(newTree.getNodeAtIndex(2) + "\n");
         System.out.print(newTree.getNodeAtIndex(3) + "\n");
+        System.out.println("Inserting 5, 6, 7\n");
         newTree.BTreeInsert(5);
         newTree.BTreeInsert(6);
+        newTree.BTreeInsert(7);
         System.out.print(newTree.getNodeAtIndex(1) + "\n");
         System.out.print(newTree.getNodeAtIndex(2) + "\n");
         System.out.print(newTree.getNodeAtIndex(3) + "\n");
         System.out.print(newTree.getNodeAtIndex(4) + "\n");
+        System.out.println("Inserting 8\n");
+        newTree.BTreeInsert(8);
+        System.out.print(newTree.getNodeAtIndex(1) + "\n");
+        System.out.print(newTree.getNodeAtIndex(2) + "\n");
+        System.out.print(newTree.getNodeAtIndex(3) + "\n");
+        System.out.print(newTree.getNodeAtIndex(4) + "\n");
+        System.out.print(newTree.getNodeAtIndex(5) + "\n");
+        System.out.println("Inserting 9\n"); //todo: problem when splitting an internal node here
+        newTree.BTreeInsert(9);
+        System.out.print(newTree.getNodeAtIndex(1) + "\n");
+        System.out.print(newTree.getNodeAtIndex(2) + "\n");
+        System.out.print(newTree.getNodeAtIndex(3) + "\n");
+        System.out.print(newTree.getNodeAtIndex(4) + "\n");
+        System.out.print(newTree.getNodeAtIndex(5) + "\n");
+        System.out.print(newTree.getNodeAtIndex(6) + "\n");
+        System.out.print(newTree.getNodeAtIndex(7) + "\n");
+        System.out.println("Inserting 10, 11, 12, 13");
+        System.out.print(newTree.getNodeAtIndex(1) + "\n");
+        System.out.print(newTree.getNodeAtIndex(2) + "\n");
+        System.out.print(newTree.getNodeAtIndex(3) + "\n");
+        System.out.print(newTree.getNodeAtIndex(4) + "\n");
+        System.out.print(newTree.getNodeAtIndex(5) + "\n");
+        System.out.print(newTree.getNodeAtIndex(6) + "\n");
+        System.out.print(newTree.getNodeAtIndex(7) + "\n");
+        System.out.print(newTree.getNodeAtIndex(8) + "\n");
+        System.out.print(newTree.getNodeAtIndex(9) + "\n");
+        System.out.print(newTree.getNodeAtIndex(10) + "\n");
     }
 
     public static boolean Compare(BTreeNode n, BTreeNode n2) {
