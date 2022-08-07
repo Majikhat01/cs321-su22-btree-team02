@@ -1,5 +1,6 @@
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.util.LinkedList;
 
 public class BTree {
 
@@ -36,9 +37,10 @@ public class BTree {
     // class constructor
     public BTree(String fileName, int k, int t, int cacheSize) throws FileNotFoundException {
         byteFile = new RandomAccessFile(fileName, "rw");
-        root = new BTreeNode(rootOffSet);
-        seqLength = k;
         degree = t;
+        root = new BTreeNode(rootOffSet);
+        root.leaf = true;
+        seqLength = k;
 
         if (degree == 0) {
             degree = calculateOptimumDegree();
@@ -48,6 +50,36 @@ public class BTree {
         nextAddress = rootOffSet + nodeSize;
         this.cacheSize = cacheSize;
         //Cache<BTreeNode> bTreeCache = new Cache<>();//Need to find max size
+    }
+
+    public String getNodeAtIndex(int i) throws IOException {
+        if (i < 1) {
+            return null;
+        }
+
+        LinkedList<BTreeNode> Q = new LinkedList<>();
+        Q.addFirst(root);
+
+        if (root.children[1] != 0) {
+            for (int l = 1; l <= root.numKeys + 1; l++) {
+                BTreeNode child = diskRead(root.children[l]);
+                Q.addFirst(child);
+            }
+        }
+
+        for (int j= 1; j <= i - 1; j++) {
+            BTreeNode node = Q.removeLast();
+
+            if (!node.leaf) {
+                for (int k = 1; k <= node.numKeys + 1; k++) {
+                    BTreeNode child = diskRead(node.children[k]);
+                    Q.addFirst(child);
+                }
+            }
+        }
+
+        BTreeNode node = Q.removeLast();
+        return node.toString();
     }
 
 
@@ -93,14 +125,15 @@ public class BTree {
         int i = x.numKeys;
         int j = i;
 
-        while (j >= 1 && k < x.keys[j].getDNA()) {
-            j--;
-        }
+
+//        while (j >= 1 && k < x.keys[j].getDNA()) {
+//            j--;
+//        }
 
         if (x.leaf) {
 
             //checks for duplicate keys before inserting
-            if (j > 0 && k == x.keys[j].getDNA()) {
+            if (j >= 1 && k == x.keys[j].getDNA()) {
                 x.keys[j].setFrequency(x.keys[j].getFrequency() + 1);
                 diskWrite(x);
                 return;
@@ -111,7 +144,7 @@ public class BTree {
                 i--;
             }
 
-            BTreeInsert(k);
+            x.keys[i + 1] = new TreeObject(k, 1);
             x.numKeys = x.numKeys + 1;
             diskWrite(x);
         } else {
@@ -126,7 +159,7 @@ public class BTree {
                 BTreeSplitChild(x, i, child);
 
                 //checks for duplicate keys before inserting
-                if (j > 0 && k == x.keys[j].getDNA()) {
+                if (j >= 1 && k == x.keys[j].getDNA()) {
                     x.keys[j].setFrequency(x.keys[j].getFrequency() + 1);
                     diskWrite(x);
                     return;
@@ -162,16 +195,16 @@ public class BTree {
 
         BTreeNode z = new BTreeNode(nextAddress);
         nextAddress = nextAddress + nodeSize;
-        y = new BTreeNode(x.children[i]);
         z.leaf = y.leaf;
-        z.numKeys = degree - 1;
+        z.setKeys(degree - 1);
 
-        for (int j = 1; j < degree - 1; j++) {
+        for (int j = 1; j <= degree - 1; j++) {
             z.keys[j] = y.keys[j + degree];
-            if (!y.leaf) {
-                for (j = 1; j < degree; j++) {
-                    z.children[j] = y.children[j + 1];
-                }
+        }
+
+        if (!y.leaf) {
+            for (int j = 1; j <= degree; j++) {
+                z.children[j] = y.children[j + degree];
             }
         }
 
@@ -183,10 +216,11 @@ public class BTree {
 
         x.children[i + 1] = z.location;
 
-        for (int j = x.numKeys; j > i; j--) {
+        for (int j = x.numKeys; j >= i; j--) {
             x.keys[j + 1] = x.keys[j];
         }
 
+        x.keys[i] = y.keys[degree];
         x.numKeys = x.numKeys + 1;
         diskWrite(x);
         diskWrite(y);
@@ -209,16 +243,17 @@ public class BTree {
         }
     }
 
-    public void BTreeDump(String fileName, BTree T) throws IOException {
+    public void BTreeDump(String fileName) throws IOException {
         PrintStream ps = new PrintStream(new File(fileName));
         PrintStream Stdout = System.out;
-        DumpTree(T.root, ps);
+        DumpTree(this.root, ps);
         System.setOut(ps);
         System.setOut(Stdout);
     }
 
     public void diskWrite(BTreeNode node) throws IOException{
         //Take a BTreeNode and serialize it and then write that information to the RAF
+        long address = node.getLocation();
         byteFile.seek(node.getLocation());
         byteFile.write(node.serialize());
     }
@@ -228,7 +263,7 @@ public class BTree {
         byteFile.seek(nodeAddress);
         ByteBuffer bb = ByteBuffer.allocate(nodeSize);
         byteFile.read(bb.array());
-        return new BTreeNode(bb);
+        return new BTreeNode(bb, nodeAddress);
     }
 
     public void writeMD() throws IOException {
@@ -324,6 +359,19 @@ public class BTree {
             children[index] = fileLocation;
         }
 
+        public boolean isEmpty() {
+            return (this.keys.length == 0);
+        }
+
+        @Override
+        public String toString() {
+            String retVal = "";
+            for (int i = 1; i <= this.getKeys(); i++) {
+                retVal += this.keys[i].getDNA() + ", ";
+            }
+            return retVal;
+        }
+
         public byte[] serialize() {
             ByteBuffer bb = ByteBuffer.allocate(4 + 1 + 12 * (2 * degree - 1) + 8 * (2 * degree));
             bb.putInt(numKeys);
@@ -347,7 +395,8 @@ public class BTree {
             return bb.array();
         }
 
-        public BTreeNode(ByteBuffer bb) {
+        public BTreeNode(ByteBuffer bb, long location) {
+            this.location=location;
             numKeys = bb.getInt();
             byte leafStatus = bb.get();
             leaf = leafStatus == 15;
@@ -357,7 +406,7 @@ public class BTree {
                 keys[i] = new TreeObject(bb.getLong(), bb.getInt());
             }
 
-            children = new long[2 * degree];
+            children = new long[(2 * degree) +1];
 
             for (int i = 1; i <= numKeys + 1; i++) {
                 children[i] = bb.getLong();

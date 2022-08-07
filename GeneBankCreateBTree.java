@@ -63,7 +63,7 @@ public class GeneBankCreateBTree
             + "and less than or equal to 31");
             printUsageAndExit(message, 1);
         }
-        if (debugLevel !=0 || debugLevel !=1)
+        if (!(debugLevel ==0 || debugLevel ==1))
         {
             printUsageAndExit("debug level argument should be 0 or 1", 1);
         }
@@ -71,15 +71,18 @@ public class GeneBankCreateBTree
 
 
         //todo: initialize a btree with commandline parameters
-        BTree newTree = null;
+        try
+        {
+            BTree newTree = new BTree("test", sequenceLength, degree, cacheSize);
 
         //todo: write debug level support
 
 
         //try to parse file and insert long dna into the btree
-        try
-        {
-            scanDNA(gbkFile, sequenceLength); //todo: add btree as a paramater
+            scanDNA(newTree, gbkFile, sequenceLength); //todo: add btree as a paramater
+            if (debugLevel == 1) {
+                newTree.BTreeDump("dump");
+            }
         }
         catch (IOException e)
         {
@@ -110,7 +113,7 @@ public class GeneBankCreateBTree
 
 
     //scan file, discard text before origin, parse dna, insert long dna into btree
-    public static void scanDNA(File file, int sequenceLength) throws IOException //add btree as a parameter
+    public static void scanDNA(BTree T, File file, int sequenceLength) throws IOException //add btree as a parameter
     {
         long dna = 0;
        // String[] subLenK = new String[100];
@@ -137,7 +140,8 @@ public class GeneBankCreateBTree
                     //make sub a long and insert it into the btree
                     String sub = currentString.substring(0, sequenceLength); //ceiling is exclusive
                     currentString = currentString.substring(1);
-                    long DNALong = stringToLong(sub); 
+                    long DNALong = stringToLong(sub);
+                    T.BTreeInsert(DNALong);
                     System.out.println("sub: " + sub);
 
                     //subLenK[index] = sub;
@@ -162,8 +166,9 @@ public class GeneBankCreateBTree
         for (int i=0; i<subSequence.length()-1; i++)
         {
             char letter = subSequence.charAt(i);
-            retval += charToNum(letter);
             retval = retval << 2;
+            retval += charToNum(letter);
+
         }
         char letter = subSequence.charAt(subSequence.length()-1);
         retval += charToNum(letter);
@@ -179,7 +184,7 @@ public class GeneBankCreateBTree
 
         if(letter == 'C' || letter == 'c')
         {
-            num=1;
+            num = 1;
         }
         if(letter == 'G' || letter == 'g')
         {

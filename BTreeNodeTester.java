@@ -4,23 +4,21 @@ import java.nio.ByteBuffer;
 public class BTreeNodeTester {
 
     public static void main(String[] args) throws IOException {
-        BTreeNode n = new BTreeNode(1000, 3);
-        n.numKeys = 3;
-        n.keys[1] = new TreeObject(1, 1);
-        n.keys[2] = new TreeObject(2, 2);
-        n.keys[3] = new TreeObject(3, 3);
-        n.children[1] = 1000;
-        n.children[2] = 2000;
-        n.children[3] = 3000;
-        n.children[4] = 4000;
-        int degree = 3;
-
-        byte[] node = n.serialize();
-        ByteBuffer bb = ByteBuffer.allocate(4 + 1 + 12 * (2 * degree - 1) + 8 * (2 * degree));
-        bb = ByteBuffer.wrap(node);
-        BTreeNode n2 = new BTreeNode(bb, degree);
-
-        System.out.println(Compare(n, n2));
+        BTree newTree = new BTree("test", 2, 2, 0);
+        newTree.BTreeInsert(1);
+        newTree.BTreeInsert(2);
+        newTree.BTreeInsert(3);
+        System.out.print(newTree.getNodeAtIndex(1) + "\n");
+        newTree.BTreeInsert(4);
+        System.out.print(newTree.getNodeAtIndex(1) + "\n");
+        System.out.print(newTree.getNodeAtIndex(2) + "\n");
+        System.out.print(newTree.getNodeAtIndex(3) + "\n");
+        newTree.BTreeInsert(5);
+        newTree.BTreeInsert(6);
+        System.out.print(newTree.getNodeAtIndex(1) + "\n");
+        System.out.print(newTree.getNodeAtIndex(2) + "\n");
+        System.out.print(newTree.getNodeAtIndex(3) + "\n");
+        System.out.print(newTree.getNodeAtIndex(4) + "\n");
     }
 
     public static boolean Compare(BTreeNode n, BTreeNode n2) {
