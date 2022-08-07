@@ -7,6 +7,18 @@ public class GeneBankSearchBTree {
 
         //todo: check # and accuracy of arguments
 
+        //Argument length must be either 3, 4, or 5
+        if (!(args.length == 3 || args.length == 4)) {
+            printUsageAndExit(1);
+        }
+
+        //Cache choice is either 0 or 1 to signify its usage
+        if (!(Integer.parseInt(args[0]) == 0 || Integer.parseInt(args[0]) == 1)) {
+            printUsageAndExit("Must choose either 0 OR 1 for cache usage. ", 1);
+        }
+
+        //Need to ensure both files passed in are valid files
+
         //assign arguments to variables
         int cache = Integer.parseInt(args[0]);
         String BTreeFile = new String(args[1]);
@@ -16,7 +28,11 @@ public class GeneBankSearchBTree {
 
         if (cache == 1)
         {
+
             cacheSize = Integer.parseInt(args[3]);
+            if(cacheSize <= 0 ) {
+                printUsageAndExit("Cache size must be greater than 0.", 1);
+            }
             if(args.length == 4)
             {
                 debugLevel = Integer.parseInt(args[4]);
@@ -30,9 +46,10 @@ public class GeneBankSearchBTree {
 
 
         //todo: initialize a btree with commandline parameters
-        //BTree newTree = null;
+        //BTree newTree = new BTree(BTreeFile, 1, 1, cacheSize);
 
         //todo: write debug level support
+
 
 
         //try to parse file
