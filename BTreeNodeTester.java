@@ -40,6 +40,10 @@ public class BTreeNodeTester {
         System.out.print(newTree.getNodeAtIndex(6) + "\n");
         System.out.print(newTree.getNodeAtIndex(7) + "\n");
         System.out.println("Inserting 10, 11, 12, 13");
+        newTree.BTreeInsert(10);
+        newTree.BTreeInsert(11);
+        newTree.BTreeInsert(12);
+        newTree.BTreeInsert(13);
         System.out.print(newTree.getNodeAtIndex(1) + "\n");
         System.out.print(newTree.getNodeAtIndex(2) + "\n");
         System.out.print(newTree.getNodeAtIndex(3) + "\n");
@@ -50,6 +54,27 @@ public class BTreeNodeTester {
         System.out.print(newTree.getNodeAtIndex(8) + "\n");
         System.out.print(newTree.getNodeAtIndex(9) + "\n");
         System.out.print(newTree.getNodeAtIndex(10) + "\n");
+        System.out.println("Inserting 14, 15, 16, 17, 18");
+        newTree.BTreeInsert(14);
+        newTree.BTreeInsert(15);
+        newTree.BTreeInsert(16);
+        newTree.BTreeInsert(17);
+        newTree.BTreeInsert(18);
+        System.out.print(newTree.getNodeAtIndex(1) + "\n");
+        System.out.print(newTree.getNodeAtIndex(2) + "\n");
+        System.out.print(newTree.getNodeAtIndex(3) + "\n");
+        System.out.print(newTree.getNodeAtIndex(4) + "\n");
+        System.out.print(newTree.getNodeAtIndex(5) + "\n");
+        System.out.print(newTree.getNodeAtIndex(6) + "\n");
+        System.out.print(newTree.getNodeAtIndex(7) + "\n");
+        System.out.print(newTree.getNodeAtIndex(8) + "\n");
+        System.out.print(newTree.getNodeAtIndex(9) + "\n");
+        System.out.print(newTree.getNodeAtIndex(10) + "\n");
+        System.out.print(newTree.getNodeAtIndex(11) + "\n");
+        System.out.print(newTree.getNodeAtIndex(12) + "\n");
+        System.out.print(newTree.getNodeAtIndex(13) + "\n");
+        System.out.print(newTree.getNodeAtIndex(14) + "\n");
+        System.out.print(newTree.getNodeAtIndex(15) + "\n");
     }
 
     public static boolean Compare(BTreeNode n, BTreeNode n2) {

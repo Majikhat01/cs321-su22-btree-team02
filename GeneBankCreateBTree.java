@@ -141,7 +141,7 @@ public class GeneBankCreateBTree
                     String sub = currentString.substring(0, sequenceLength); //ceiling is exclusive
                     currentString = currentString.substring(1);
                     long DNALong = stringToLong(sub);
-                    T.BTreeInsert(DNALong);
+                    T.BTreeInsert(DNALong); //program fails here when running test3.gbk when retval == 817 in stringToLong()
                     System.out.println("sub: " + sub);
 
                     //subLenK[index] = sub;

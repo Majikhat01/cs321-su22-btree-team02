@@ -52,8 +52,8 @@ public class BTree {
         //Cache<BTreeNode> bTreeCache = new Cache<>();//Need to find max size
     }
 
-    public String getNodeAtIndex(int i) throws IOException {
-        if (i < 1) {
+    public String getNodeAtIndex(int index) throws IOException {
+        if (index < 1) {
             return null;
         }
 
@@ -61,13 +61,24 @@ public class BTree {
         Q.addFirst(root);
 
         if (root.children[1] != 0) {
-            for (int l = 1; l <= root.numKeys + 1; l++) {
-                BTreeNode child = diskRead(root.children[l]);
+            for (int i = 1; i <= root.numKeys + 1; i++) {
+                BTreeNode child = diskRead(root.children[i]);
                 Q.addFirst(child);
+            }
+
+            // this works for the test up to 3 levels, but doesn't work for 4.
+            // probably need to do some recursive trickery
+            for (int i = 1; i <= root.numKeys + 1; i++) {
+                BTreeNode child = diskRead(root.children[i]);
+                for (int j = 1; j <= child.numKeys + 1; j++) {
+                    BTreeNode childsChild = diskRead(child.children[j]);
+                    Q.addFirst(childsChild);
+                }
             }
         }
 
-        for (int j= 1; j <= i - 1; j++) {
+
+        for (int j= 1; j <= index - 1; j++) {
             BTreeNode node = Q.removeLast();
 
             if (!node.leaf) {
@@ -126,9 +137,9 @@ public class BTree {
         int j = i;
 
 
-//        while (j >= 1 && k < x.keys[j].getDNA()) {
-//            j--;
-//        }
+        while (j >= 1 && k < x.keys[j].getDNA()) {
+            j--;
+        }
 
         if (x.leaf) {
 
