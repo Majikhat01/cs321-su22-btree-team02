@@ -8,7 +8,7 @@ public class GeneBankSearchBTree {
         //todo: check # and accuracy of arguments
 
         //Argument length must be either 3, 4, or 5
-        if (!(args.length == 3 || args.length == 4)) {
+        if (!(args.length == 3 || args.length == 4 || args.length == 5)) {
             printUsageAndExit(1);
         }
 
@@ -55,6 +55,7 @@ public class GeneBankSearchBTree {
         //try to parse file
         try
         {
+            BTree newTree = new BTree(cacheSize, BTreeFile);
             Scanner scan = new Scanner(queryFile);
             while(scan.hasNextLine())
             {
@@ -62,6 +63,11 @@ public class GeneBankSearchBTree {
                 
                 long searchKey = GeneBankCreateBTree.stringToLong(query);
                 //call btree search(search key)
+                int freq = newTree.searchStart(searchKey);
+                if(freq > 0)
+                {
+                    System.out.println(searchKey +  ": " + freq);
+                }
             }
 
         }

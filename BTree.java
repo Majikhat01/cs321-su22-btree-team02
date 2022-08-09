@@ -52,6 +52,11 @@ public class BTree {
         //Cache<BTreeNode> bTreeCache = new Cache<>();//Need to find max size
     }
 
+    public BTree(int cacheSize, string filePath)
+    {
+
+    }
+
     public String getNodeAtIndex(int index) throws IOException {
         if (index < 1) {
             return null;
@@ -109,6 +114,11 @@ public class BTree {
             BTreeNode child = diskRead(x.children[i]);
             return BTreeSearch(child, k);
         }
+    }
+
+    public int searchStart(long k)
+    {
+       return BTreeSearch(root, k);
     }
 
     // be careful not to add duplicate keys for Insert and Nonfull
