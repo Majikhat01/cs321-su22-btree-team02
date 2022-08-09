@@ -40,19 +40,27 @@ public class TreeObject {
         return DNA;
     }
 
-    public String toString() {
-        String stringDNA = Long.toString(DNA);
+    public String toString(int sequenceLength) {
+        int k = sequenceLength;
+        String stringDNA = Long.toBinaryString(DNA);
         StringBuilder returnDNA = new StringBuilder();
+        while (stringDNA.length() < sequenceLength * 2) {
+            stringDNA = "0".concat(stringDNA);
+        }
         for (int i = 0; i < stringDNA.length(); i += 2) {
-            String singleDNA = stringDNA.substring(i, i+1);
+            String singleDNA = stringDNA.substring(i, i+2);
             switch (singleDNA) {
-                case "00": returnDNA.append("A");
-                case "11": returnDNA.append("T");
-                case "01": returnDNA.append("C");
-                case "10": returnDNA.append("G");
+                case "00": returnDNA.append("a");
+                    break;
+                case "11": returnDNA.append("t");
+                    break;
+                case "01": returnDNA.append("c");
+                    break;
+                case "10": returnDNA.append("g");
+                    break;
             }
         }
-        return  returnDNA.toString() + ": " + frequency;
+        return  returnDNA + ": " + frequency;
     }
 
 }

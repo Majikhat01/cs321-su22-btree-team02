@@ -60,22 +60,22 @@ public class BTree {
         LinkedList<BTreeNode> Q = new LinkedList<>();
         Q.addFirst(root);
 
-        if (root.children[1] != 0) {
-            for (int i = 1; i <= root.numKeys + 1; i++) {
-                BTreeNode child = diskRead(root.children[i]);
-                Q.addFirst(child);
-            }
-
-            // this works for the test up to 3 levels, but doesn't work for 4.
-            // probably need to do some recursive trickery
-            for (int i = 1; i <= root.numKeys + 1; i++) {
-                BTreeNode child = diskRead(root.children[i]);
-                for (int j = 1; j <= child.numKeys + 1; j++) {
-                    BTreeNode childsChild = diskRead(child.children[j]);
-                    Q.addFirst(childsChild);
-                }
-            }
-        }
+//        if (root.children[1] != 0) {
+//            for (int i = 1; i <= root.numKeys + 1; i++) {
+//                BTreeNode child = diskRead(root.children[i]);
+//                Q.addFirst(child);
+//            }
+//
+//            // this works for the test up to 3 levels, but doesn't work for 4.
+//            // probably need to do some recursive trickery
+//            for (int i = 1; i <= root.numKeys + 1; i++) {
+//                BTreeNode child = diskRead(root.children[i]);
+//                for (int j = 1; j <= child.numKeys + 1; j++) {
+//                    BTreeNode childsChild = diskRead(child.children[j]);
+//                    Q.addFirst(childsChild);
+//                }
+//            }
+//        }
 
 
         for (int j= 1; j <= index - 1; j++) {
@@ -134,22 +134,17 @@ public class BTree {
 
     public void BTreeInsertNonfull(BTreeNode x, long k) throws IOException {
         int i = x.numKeys;
-        int j = i;
-
-
-        while (j >= 1 && k < x.keys[j].getDNA()) {
-            j--;
-        }
 
         if (x.leaf) {
 
             //checks for duplicate keys before inserting
-            if (j >= 1 && k == x.keys[j].getDNA()) {
-                x.keys[j].setFrequency(x.keys[j].getFrequency() + 1);
-                diskWrite(x);
-                return;
+            for (int j = 1; j <= x.numKeys; j++) {
+                if (k == x.keys[j].getDNA()) {
+                    x.keys[j].setFrequency(x.keys[j].getFrequency() + 1);
+                    diskWrite(x);
+                    return;
+                }
             }
-
             while (i >= 1 && k < x.keys[i].getDNA()) {
                 x.keys[i + 1] = x.keys[i];
                 i--;
@@ -169,13 +164,6 @@ public class BTree {
             if (child.numKeys == (2 * degree) - 1) {
                 BTreeSplitChild(x, i, child);
 
-                //checks for duplicate keys before inserting
-                if (j >= 1 && k == x.keys[j].getDNA()) {
-                    x.keys[j].setFrequency(x.keys[j].getFrequency() + 1);
-                    diskWrite(x);
-                    return;
-                }
-
                 if (k > x.keys[i].getDNA()) {
                     i++;
                 }
@@ -184,6 +172,14 @@ public class BTree {
                 child = diskRead(x.children[i]);
             }
 
+            //checks for duplicate keys before inserting
+            for (int j = 1; j <= x.numKeys; j++) {
+                if (k == x.keys[j].getDNA()) {
+                    x.keys[j].setFrequency(x.keys[j].getFrequency() + 1);
+                    diskWrite(x);
+                    return;
+                }
+            }
             BTreeInsertNonfull(child, k);
         }
     }
@@ -221,7 +217,7 @@ public class BTree {
 
         y.numKeys = degree - 1;
 
-        for (int j = x.numKeys + 1; j > i + 1; j--) {
+        for (int j = x.numKeys + 1; j >= i + 1; j--) {
             x.children[j + 1] = x.children[j];
         }
 
@@ -240,17 +236,16 @@ public class BTree {
 
     public void DumpTree(BTreeNode x, PrintStream ps) throws IOException {
         if (x.isLeaf()) {
-            for (int i = 1; i < x.numKeys; i++) {
-                ps.append(x.keys[i].toString() + "\n");
+            for (int i = 1; i <= x.numKeys; i++) {
+                ps.append(x.keys[i].toString(seqLength) + "\n");
             }
         } else {
             for (int i = 1; i < x.numKeys + 1; i++) {
-                BTreeNode child = new BTreeNode(x.children[i]);
+                BTreeNode child = diskRead(x.children[i]);
                 DumpTree(child, ps);
-                ps.append(x.keys[i].toString() + "\n");
-                child = diskRead(x.children[x.numKeys + 1]);
-                DumpTree(child, ps);
+                ps.append(x.keys[i].toString(seqLength) + "\n");
             }
+            DumpTree(diskRead(x.children[x.numKeys + 1]), ps);
         }
     }
 
