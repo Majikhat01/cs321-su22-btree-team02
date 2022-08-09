@@ -55,7 +55,7 @@ public class GeneBankSearchBTree {
         //try to parse file
         try
         {
-            BTree newTree = new BTree(cacheSize, BTreeFile);
+           // BTree newTree = new BTree(cacheSize, BTreeFile);
             Scanner scan = new Scanner(queryFile);
             while(scan.hasNextLine())
             {
