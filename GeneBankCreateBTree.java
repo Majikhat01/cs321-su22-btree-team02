@@ -28,10 +28,15 @@ public class GeneBankCreateBTree
         int sequenceLength = Integer.parseInt(args[3]);
         int cacheSize = 0;
         int debugLevel = 0;
+        boolean useCache = false;
 
         if (cache == 1)
         {
+            useCache = true;
             cacheSize = Integer.parseInt(args[4]);
+            if (cacheSize <= 0) {
+                printUsageAndExit("Cache size must be greater than 0.", 1);
+            }
             if(args.length == 6)
             {
                 debugLevel = Integer.parseInt(args[5]);
@@ -73,7 +78,7 @@ public class GeneBankCreateBTree
         //todo: initialize a btree with commandline parameters
         try
         {
-            BTree newTree = new BTree("test", sequenceLength, degree, cacheSize);
+            BTree newTree = new BTree("test", sequenceLength, degree, cacheSize, useCache);
 
         //todo: write debug level support
 

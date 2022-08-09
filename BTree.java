@@ -2,7 +2,7 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
 
-public class BTree {
+public class BTree extends Cache<BTree.BTreeNode> {
 
     //Offset of BTreeNode in the byteArray
     private long rootOffSet = 16;
@@ -35,7 +35,8 @@ public class BTree {
     //Need to serialize Btree
 
     // class constructor
-    public BTree(String fileName, int k, int t, int cacheSize) throws FileNotFoundException {
+    public BTree(String fileName, int k, int t, int cacheSize, boolean useCache) throws FileNotFoundException {
+        super(cacheSize);
         byteFile = new RandomAccessFile(fileName, "rw");
         degree = t;
         root = new BTreeNode(rootOffSet);
@@ -48,7 +49,11 @@ public class BTree {
 
         nodeSize = 4 + 1 + 12 * (2 * degree - 1) + 8 * (2 * degree);
         nextAddress = rootOffSet + nodeSize;
-        this.cacheSize = cacheSize;
+
+        if (useCache) {
+            this.cacheSize = cacheSize;
+        }
+
         //Cache<BTreeNode> bTreeCache = new Cache<>();//Need to find max size
     }
 

@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 public class BTreeNodeTester {
 
     public static void main(String[] args) throws IOException {
-        BTree newTree = new BTree("test", 2, 2, 0);
+        BTree newTree = new BTree("test", 2, 2, 0, false);
         System.out.println("Inserting 568, 216, 862\n");
         newTree.BTreeInsert(568);
         newTree.BTreeInsert(216);

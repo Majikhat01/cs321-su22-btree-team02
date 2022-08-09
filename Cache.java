@@ -34,10 +34,12 @@ public class Cache<T>{
     }
 
     public void removeObject(T object) {
+
         list.remove(object);
     }
 
     public void clearCache() {
+
         list.clear();
     }
 
