@@ -1,6 +1,6 @@
 import java.util.LinkedList;
 
-public class Cache<T, U> {
+public class Cache<T extends Comparable<Long>> {
 
     //Creates new linked list to act as cache
     private LinkedList<T> list;
@@ -19,9 +19,9 @@ public class Cache<T, U> {
         
     }
 
-    public T getObject(U searchKey){
+    public T getObject(long searchKey){
         for (T object : list) {
-            if (object.equals(searchKey)) {
+            if (object.compareTo(searchKey) == 0) {
                 return object;
             }
         }

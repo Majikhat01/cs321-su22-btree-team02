@@ -24,7 +24,7 @@ public class BTree {
 
     private long nextAddress;
 
-    private Cache<BTreeNode, Long> BTreeCache = null;
+    private Cache<BTreeNode> BTreeCache = null;
 
     //RAF to create new file to store all BTree information
     private RandomAccessFile byteFile;
@@ -357,7 +357,7 @@ public class BTree {
 
 
     //**************** BTreeNode Start *****************
-    public class BTreeNode {
+    public class BTreeNode implements Comparable<Long> {
 
         //Track location
         private long location;
@@ -413,10 +413,13 @@ public class BTree {
         public boolean isEmpty() {
             return (this.keys.length == 0);
         }
-        @Override
-        public boolean equals(Object obj) {
-            return (this.location == (long)obj);
-        }
+
+//        @Override
+//        public boolean equals(Object obj) {
+//            return (this.location == (long)obj);
+//        }
+
+
 
 
         @Override
@@ -467,6 +470,14 @@ public class BTree {
             for (int i = 1; i <= numKeys + 1; i++) {
                 children[i] = bb.getLong();
             }
+        }
+
+        @Override
+        public int compareTo(Long o) {
+            if (this.location == o) {
+                return 1;
+            }
+            return 0;
         }
     }
 }

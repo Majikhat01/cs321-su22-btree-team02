@@ -78,6 +78,7 @@ public class GeneBankCreateBTree
         //todo: initialize a btree with commandline parameters
         try
         {
+            long startTime = System.currentTimeMillis();
             String fileName = args[2] + ".btree.data." + sequenceLength + "." + degree;
             System.out.print(fileName);
             BTree newTree = new BTree(fileName, sequenceLength, degree, cacheSize, useCache);
@@ -91,6 +92,8 @@ public class GeneBankCreateBTree
             if (debugLevel == 1) {
                 newTree.BTreeDump("dump");
             }
+            long endTime = System.currentTimeMillis();
+            System.out.println((endTime - startTime) * 1000);
         }
         catch (IOException e)
         {
