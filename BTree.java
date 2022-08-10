@@ -37,7 +37,7 @@ public class BTree {
     //Need to serialize Btree
 
     // class constructor
-    public BTree(String fileName, int k, int t, int cacheSize, boolean useCache) throws FileNotFoundException {
+    public BTree(String fileName, int k, int t, int cacheSize, boolean useCache) throws IOException {
         byteFile = new RandomAccessFile(fileName, "rw");
         degree = t;
         root = new BTreeNode(rootOffSet);
@@ -48,6 +48,8 @@ public class BTree {
             degree = calculateOptimumDegree();
         }
 
+        this.writeMD();
+
         nodeSize = 4 + 1 + 12 * (2 * degree - 1) + 8 * (2 * degree);
         nextAddress = rootOffSet + nodeSize;
 
@@ -56,10 +58,17 @@ public class BTree {
         }
     }
 
-//    public BTree(int cacheSize, string filePath)
-//    {
-//
-//    }
+    public BTree(int cacheSize, String filePath) throws IOException {
+        byteFile = new RandomAccessFile(filePath, "rw");
+        byteFile.seek(0);
+        rootOffSet = byteFile.readLong();
+        seqLength = byteFile.readInt();
+        degree = byteFile.readInt();
+        nodeSize = 4 + 1 + 12 * (2 * degree - 1) + 8 * (2 * degree);
+        this.cacheSize = cacheSize;
+
+        root = diskRead(rootOffSet);
+    }
 
     public String getNodeAtIndex(int index) throws IOException {
         if (index < 1) {
@@ -120,8 +129,7 @@ public class BTree {
         }
     }
 
-    public int searchStart(long k)
-    {
+    public int searchStart(long k) throws IOException {
        return BTreeSearch(root, k);
     }
 
@@ -312,7 +320,7 @@ public class BTree {
     public void writeMD() throws IOException {
         ByteBuffer bb = ByteBuffer.allocate(16);
         byteFile.seek((long)0);
-        bb.putLong(rootOffSet);
+        bb.putLong(root.location);
         bb.putInt(seqLength);
         bb.putInt(degree);
         try {
@@ -326,18 +334,18 @@ public class BTree {
         return root;
     }
 
-    public void setRoot() {
-        ByteBuffer bb = ByteBuffer.allocate(8);
-        bb.putLong(root.location);
-        try {
-            byteFile.seek(0);
-            byteFile.write(bb.array());
-        } catch(IOException e) {
-            System.out.print(e.toString());
-        }
-
-        //Call setRoot to update the final root value of where it's at one time finally in GeneBankCreateBTree
-    }
+//    public void setRoot() {
+//        ByteBuffer bb = ByteBuffer.allocate(8);
+//        bb.putLong(root.location);
+//        try {
+//            byteFile.seek(0);
+//            byteFile.write(bb.array());
+//        } catch(IOException e) {
+//            System.out.print(e.toString());
+//        }
+//
+//        //Call setRoot to update the final root value of where it's at one time finally in GeneBankCreateBTree
+//    }
 
     public int calculateOptimumDegree() {
         //NodeSize <= 4096

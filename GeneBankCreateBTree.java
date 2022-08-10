@@ -78,13 +78,16 @@ public class GeneBankCreateBTree
         //todo: initialize a btree with commandline parameters
         try
         {
-            BTree newTree = new BTree("test", sequenceLength, degree, cacheSize, useCache);
+            String fileName = args[2] + ".btree.data." + sequenceLength + "." + degree;
+            System.out.print(fileName);
+            BTree newTree = new BTree(fileName, sequenceLength, degree, cacheSize, useCache);
 
         //todo: write debug level support
 
 
         //try to parse file and insert long dna into the btree
             scanDNA(newTree, gbkFile, sequenceLength); //todo: add btree as a paramater
+            newTree.writeMD();
             if (debugLevel == 1) {
                 newTree.BTreeDump("dump");
             }
@@ -97,7 +100,7 @@ public class GeneBankCreateBTree
         if (debugLevel == 1)
         {
             String dumpName = (args[2] + "btree.dump." + sequenceLength);
-            //newTree.dump(dumpName)
+            //newTree.dump(dumpName);
         }
 
 
@@ -179,7 +182,7 @@ public class GeneBankCreateBTree
         char letter = subSequence.charAt(subSequence.length()-1);
         retval += charToNum(letter);
 
-        System.out.println("retval: " + retval);
+        //System.out.println("retval: " + retval);
         return retval;
     }
 

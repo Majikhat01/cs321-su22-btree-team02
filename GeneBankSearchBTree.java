@@ -1,9 +1,14 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 import java.util.Scanner;
 
 public class GeneBankSearchBTree {
-    public static void main(String args[]) {
+
+    private static String BTreeFile;
+    public static void main(String args[]) throws IOException {
 
         //todo: check # and accuracy of arguments
 
@@ -21,35 +26,36 @@ public class GeneBankSearchBTree {
 
         //assign arguments to variables
         int cache = Integer.parseInt(args[0]);
-        String BTreeFile = new String(args[1]);
+        BTreeFile = args[1];
         File queryFile = new File(args[2]);
         int cacheSize = 0;
         int debugLevel = 0;
+        boolean useCache = false;
 
         if (cache == 1)
         {
 
+            useCache = true;
             cacheSize = Integer.parseInt(args[3]);
             if(cacheSize <= 0 ) {
                 printUsageAndExit("Cache size must be greater than 0.", 1);
             }
-            if(args.length == 4)
+            if(args.length == 5)
             {
                 debugLevel = Integer.parseInt(args[4]);
             }
         }
-        else if (cache == 0 && args.length == 3)
+        else if (cache == 0 && args.length == 4)
         {
-            debugLevel = Integer.parseInt(args[4]);
+            debugLevel = Integer.parseInt(args[3]);
         }
 
 
 
         //todo: initialize a btree with commandline parameters
-        //BTree newTree = new BTree(BTreeFile, 1, 1, cacheSize);
+        BTree newTree = new BTree(cacheSize, BTreeFile);
 
         //todo: write debug level support
-
 
 
         //try to parse file
@@ -66,14 +72,12 @@ public class GeneBankSearchBTree {
                 int freq = newTree.searchStart(searchKey);
                 if(freq > 0)
                 {
-                    System.out.println(searchKey +  ": " + freq);
+                    System.out.println(query +  ": " + freq);
                 }
             }
 
-        }
-        catch(FileNotFoundException e)
-        {
-
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
     }
@@ -88,5 +92,4 @@ public class GeneBankSearchBTree {
         System.out.println("java GeneBankSearch <0/1(no/with Cache)> <btree file> <query file> [<cache size>] [<debug level>]");
         System.exit(i);
     }
-
 }
