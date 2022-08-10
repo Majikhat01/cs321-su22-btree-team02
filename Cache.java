@@ -1,40 +1,43 @@
 import java.util.LinkedList;
 
-public class Cache<BTreeNode> extends BTree{
+public class Cache<T, U> {
 
     //Creates new linked list to act as cache
-    private LinkedList<BTreeNode> list;
+    private LinkedList<T> list;
 
     int maxSize;
 
 
     public Cache(int size){
-        super();
+
 
         //Set max size of linked list
         maxSize = size;
 
         //Create linked list to be used as cache
-        list = new LinkedList<BTreeNode>();
+        list = new LinkedList<T>();
         
     }
 
-    public BTreeNode getObject(BTreeNode object){
-        if (list.indexOf(object) != -1) {
-            return object;
-        } else {
-            return null;
+    public T getObject(U searchKey){
+        for (T object : list) {
+            if (object.equals(searchKey)) {
+                return object;
+            }
         }
+        return null;
     }
 
-    public void addObject(BTreeNode object) {
+    public T addObject(T object) {
+        T retVal = null;
         if (list.size() == maxSize) {
-            list.removeLast();
+           retVal = list.removeLast();
         }
         list.addFirst(object);
+        return retVal;
     }
 
-    public void removeObject(BTreeNode object) {
+    public void removeObject(T object) {
 
         list.remove(object);
     }
@@ -44,7 +47,7 @@ public class Cache<BTreeNode> extends BTree{
         list.clear();
     }
 
-    public void moveObject(BTreeNode object) {
+    public void moveObject(T object) {
         removeObject(object);
         addObject(object);
     }

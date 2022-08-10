@@ -24,6 +24,8 @@ public class BTree {
 
     private long nextAddress;
 
+    private Cache<BTreeNode, Long> BTreeCache = null;
+
     //RAF to create new file to store all BTree information
     private RandomAccessFile byteFile;
 
@@ -50,10 +52,8 @@ public class BTree {
         nextAddress = rootOffSet + nodeSize;
 
         if (useCache) {
-            Cache<BTreeNode> BTreeCache = new Cache<>(cacheSize);
+            BTreeCache = new Cache<>(cacheSize);
         }
-
-        //Cache<BTreeNode> bTreeCache = new Cache<>();//Need to find max size
     }
 
 //    public BTree(int cacheSize, string filePath)
@@ -273,17 +273,40 @@ public class BTree {
 
     public void diskWrite(BTreeNode node) throws IOException{
         //Take a BTreeNode and serialize it and then write that information to the RAF
-        long address = node.getLocation();
-        byteFile.seek(node.getLocation());
-        byteFile.write(node.serialize());
+        if (BTreeCache != null) {
+            BTreeNode retNode = BTreeCache.addObject(node);
+            if (retNode != null) {
+                long address = retNode.getLocation();
+                byteFile.seek(retNode.getLocation());
+                byteFile.write(retNode.serialize());
+            }
+        } else {
+            long address = node.getLocation();
+            byteFile.seek(node.getLocation());
+            byteFile.write(node.serialize());
+        }
     }
 
     public BTreeNode diskRead(long nodeAddress) throws IOException {
         //Read information from the RAF and return a BTreeNode
-        byteFile.seek(nodeAddress);
-        ByteBuffer bb = ByteBuffer.allocate(nodeSize);
-        byteFile.read(bb.array());
-        return new BTreeNode(bb, nodeAddress);
+        if (BTreeCache != null) {
+            BTreeNode retNode = BTreeCache.getObject(nodeAddress);
+            if (retNode == null) {
+                byteFile.seek(nodeAddress);
+                ByteBuffer bb = ByteBuffer.allocate(nodeSize);
+                byteFile.read(bb.array());
+                BTreeNode addNode = new BTreeNode(bb, nodeAddress);
+                BTreeCache.addObject(addNode);
+                return addNode;
+            }
+            BTreeCache.moveObject(retNode);
+            return retNode;
+        } else {
+            byteFile.seek(nodeAddress);
+            ByteBuffer bb = ByteBuffer.allocate(nodeSize);
+            byteFile.read(bb.array());
+            return new BTreeNode(bb, nodeAddress);
+        }
     }
 
     public void writeMD() throws IOException {
@@ -382,6 +405,11 @@ public class BTree {
         public boolean isEmpty() {
             return (this.keys.length == 0);
         }
+        @Override
+        public boolean equals(Object obj) {
+            return (this.location == (long)obj);
+        }
+
 
         @Override
         public String toString() {
