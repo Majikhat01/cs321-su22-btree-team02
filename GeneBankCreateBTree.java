@@ -93,7 +93,7 @@ public class GeneBankCreateBTree
                 newTree.BTreeDump("dump");
             }
             long endTime = System.currentTimeMillis();
-            System.out.println((endTime - startTime) * 1000);
+            System.out.println("\nTime:" + (endTime - startTime));
         }
         catch (IOException e)
         {

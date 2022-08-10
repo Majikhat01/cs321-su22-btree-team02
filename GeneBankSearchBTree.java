@@ -10,6 +10,7 @@ public class GeneBankSearchBTree {
     private static String BTreeFile;
     public static void main(String args[]) throws IOException {
 
+        long startTime = System.currentTimeMillis();
         //todo: check # and accuracy of arguments
 
         //Argument length must be either 3, 4, or 5
@@ -80,6 +81,8 @@ public class GeneBankSearchBTree {
             throw new RuntimeException(e);
         }
 
+        long endTime = System.currentTimeMillis();
+        System.out.println("\nTime: " + (endTime - startTime));
     }
 
     public static void printUsageAndExit(String message, int i) {

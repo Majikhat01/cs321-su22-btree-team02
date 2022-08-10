@@ -78,24 +78,6 @@ public class BTree {
         LinkedList<BTreeNode> Q = new LinkedList<>();
         Q.addFirst(root);
 
-//        if (root.children[1] != 0) {
-//            for (int i = 1; i <= root.numKeys + 1; i++) {
-//                BTreeNode child = diskRead(root.children[i]);
-//                Q.addFirst(child);
-//            }
-//
-//            // this works for the test up to 3 levels, but doesn't work for 4.
-//            // probably need to do some recursive trickery
-//            for (int i = 1; i <= root.numKeys + 1; i++) {
-//                BTreeNode child = diskRead(root.children[i]);
-//                for (int j = 1; j <= child.numKeys + 1; j++) {
-//                    BTreeNode childsChild = diskRead(child.children[j]);
-//                    Q.addFirst(childsChild);
-//                }
-//            }
-//        }
-
-
         for (int j= 1; j <= index - 1; j++) {
             BTreeNode node = Q.removeLast();
 
@@ -414,10 +396,10 @@ public class BTree {
             return (this.keys.length == 0);
         }
 
-//        @Override
-//        public boolean equals(Object obj) {
-//            return (this.location == (long)obj);
-//        }
+        @Override
+        public boolean equals(Object obj) {
+            return (this.location == (long)obj);
+        }
 
 
 
