@@ -1,6 +1,7 @@
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
+import java.util.Stack;
 
 public class BTree {
 
@@ -137,54 +138,58 @@ public class BTree {
     }
 
     public void BTreeInsertNonfull(BTreeNode x, long k) throws IOException {
-        int i = x.numKeys;
+        try {
+            int i = x.numKeys;
 
-        if (x.leaf) {
+            if (x.leaf) {
 
-            //checks for duplicate keys before inserting
-            for (int j = 1; j <= x.numKeys; j++) {
-                if (k == x.keys[j].getDNA()) {
-                    x.keys[j].setFrequency(x.keys[j].getFrequency() + 1);
-                    diskWrite(x);
-                    return;
+                //checks for duplicate keys before inserting
+                for (int j = 1; j <= x.numKeys; j++) {
+                    if (k == x.keys[j].getDNA()) {
+                        x.keys[j].setFrequency(x.keys[j].getFrequency() + 1);
+                        diskWrite(x);
+                        return;
+                    }
                 }
-            }
-            while (i >= 1 && k < x.keys[i].getDNA()) {
-                x.keys[i + 1] = x.keys[i];
-                i--;
-            }
-
-            x.keys[i + 1] = new TreeObject(k, 1);
-            x.numKeys = x.numKeys + 1;
-            diskWrite(x);
-        } else {
-            while (i >= 1 && k < x.keys[i].getDNA()) {
-                i--;
-            }
-
-            i++;
-            BTreeNode child = diskRead(x.children[i]);
-
-            if (child.numKeys == (2 * degree) - 1) {
-                BTreeSplitChild(x, i, child);
-
-                if (k > x.keys[i].getDNA()) {
-                    i++;
+                while (i >= 1 && k < x.keys[i].getDNA()) {
+                    x.keys[i + 1] = x.keys[i];
+                    i--;
                 }
 
-                //update the child node to be inserted
-                child = diskRead(x.children[i]);
-            }
-
-            //checks for duplicate keys before inserting
-            for (int j = 1; j <= x.numKeys; j++) {
-                if (k == x.keys[j].getDNA()) {
-                    x.keys[j].setFrequency(x.keys[j].getFrequency() + 1);
-                    diskWrite(x);
-                    return;
+                x.keys[i + 1] = new TreeObject(k, 1);
+                x.numKeys = x.numKeys + 1;
+                diskWrite(x);
+            } else {
+                while (i >= 1 && k < x.keys[i].getDNA()) {
+                    i--;
                 }
+
+                i++;
+                BTreeNode child = diskRead(x.children[i]);
+
+                if (child.numKeys == (2 * degree) - 1) {
+                    BTreeSplitChild(x, i, child);
+
+                    if (k > x.keys[i].getDNA()) {
+                        i++;
+                    }
+
+                    //update the child node to be inserted
+                    child = diskRead(x.children[i]);
+                }
+
+                //checks for duplicate keys before inserting
+                for (int j = 1; j <= x.numKeys; j++) {
+                    if (k == x.keys[j].getDNA()) {
+                        x.keys[j].setFrequency(x.keys[j].getFrequency() + 1);
+                        diskWrite(x);
+                        return;
+                    }
+                }
+                BTreeInsertNonfull(child, k);
             }
-            BTreeInsertNonfull(child, k);
+        } catch (StackOverflowError e) {
+            e.printStackTrace();
         }
     }
 
@@ -396,9 +401,8 @@ public class BTree {
             return (this.keys.length == 0);
         }
 
-        @Override
-        public boolean equals(Object obj) {
-            return (this.location == (long)obj);
+        public boolean equals(BTree.BTreeNode obj) {
+            return (this.getLocation() == obj.getLocation());
         }
 
 

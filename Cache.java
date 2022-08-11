@@ -1,9 +1,9 @@
 import java.util.LinkedList;
 
-public class Cache<T extends Comparable<Long>> {
+public class Cache<T> {
 
     //Creates new linked list to act as cache
-    private LinkedList<T> list;
+    private LinkedList<BTree.BTreeNode> list;
 
     int maxSize;
 
@@ -15,21 +15,29 @@ public class Cache<T extends Comparable<Long>> {
         maxSize = size;
 
         //Create linked list to be used as cache
-        list = new LinkedList<T>();
+        list = new LinkedList<>();
         
     }
 
-    public T getObject(long searchKey){
-        for (T object : list) {
-            if (object.compareTo(searchKey) == 0) {
-                return object;
+    public BTree.BTreeNode getObject(long searchKey){
+        try {
+            BTree.BTreeNode retNode = null;
+            for (BTree.BTreeNode node : list) {
+                if (node.getLocation() == searchKey) {
+                    retNode = node;
+                    break;
+                }
             }
+
+            return retNode;
+        } catch (StackOverflowError e) {
+            System.out.println("stop");
+            return null;
         }
-        return null;
     }
 
-    public T addObject(T object) {
-        T retVal = null;
+    public BTree.BTreeNode addObject(BTree.BTreeNode object) {
+        BTree.BTreeNode retVal = null;
         if (list.size() == maxSize) {
            retVal = list.removeLast();
         }
@@ -37,7 +45,7 @@ public class Cache<T extends Comparable<Long>> {
         return retVal;
     }
 
-    public void removeObject(T object) {
+    public void removeObject(BTree.BTreeNode object) {
 
         list.remove(object);
     }
@@ -47,7 +55,7 @@ public class Cache<T extends Comparable<Long>> {
         list.clear();
     }
 
-    public void moveObject(T object) {
+    public void moveObject(BTree.BTreeNode object) {
         removeObject(object);
         addObject(object);
     }
