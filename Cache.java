@@ -20,26 +20,21 @@ public class Cache<T> {
     }
 
     public BTree.BTreeNode getObject(long searchKey){
-        try {
-            BTree.BTreeNode retNode = null;
-            for (BTree.BTreeNode node : list) {
-                if (node.getLocation() == searchKey) {
-                    retNode = node;
-                    break;
-                }
+        BTree.BTreeNode retNode = null;
+        for (BTree.BTreeNode node : list) {
+            if (node.getLocation() == searchKey) {
+                return retNode = node;
             }
-
-            return retNode;
-        } catch (StackOverflowError e) {
-            System.out.println("stop");
-            return null;
         }
+
+        return retNode;
     }
 
     public BTree.BTreeNode addObject(BTree.BTreeNode object) {
         BTree.BTreeNode retVal = null;
         if (list.size() == maxSize) {
-           retVal = list.removeLast();
+
+            retVal = list.removeLast();
         }
         list.addFirst(object);
         return retVal;

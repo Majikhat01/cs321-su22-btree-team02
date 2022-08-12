@@ -58,7 +58,7 @@ public class GeneBankCreateBTree
         {
             printUsageAndExit("cache size should be positive", 1);
         }
-        if (degree <=  2)
+        if (degree < 2)
         {
             printUsageAndExit("degree argument should be >= 2", 1);
         }
@@ -138,8 +138,8 @@ public class GeneBankCreateBTree
             String unwanted = scan.next();
 
             scan.useDelimiter("//");
-            if (scan.hasNext())
-            {
+            if (scan.hasNext()) {
+
             String messyDNAChunck = scan.next();
             String DNAChunk = messyDNAChunck.replaceAll("ORIGIN|\\n|\\s|[0-9]", "");
             String[] DNAArray = DNAChunk.split("n+"); //one or more ns
