@@ -18,10 +18,6 @@ public class GeneBankSearchBTree {
             printUsageAndExit(1);
         }
 
-        //Cache choice is either 0 or 1 to signify its usage
-        if (!(Integer.parseInt(args[0]) == 0 || Integer.parseInt(args[0]) == 1)) {
-            printUsageAndExit("Must choose either 0 OR 1 for cache usage. ", 1);
-        }
 
         //Need to ensure both files passed in are valid files
 
@@ -33,9 +29,13 @@ public class GeneBankSearchBTree {
         int debugLevel = 0;
         boolean useCache = false;
 
+        //Cache choice is either 0 or 1 to signify its usage
+        if (!(cache == 0 || cache == 1)) {
+            printUsageAndExit("Must choose either 0 OR 1 for cache usage. ", 1);
+        }
+
         if (cache == 1)
         {
-
             useCache = true;
             cacheSize = Integer.parseInt(args[3]);
             if(cacheSize <= 0 ) {

@@ -54,11 +54,11 @@ public class GeneBankCreateBTree
         //todo: calculate degree
 
         //error checks
-        if (cacheSize < 0)
+        if (cacheSize <= 0)
         {
             printUsageAndExit("cache size should be positive", 1);
         }
-        if (degree < 2)
+        if (degree <=  2)
         {
             printUsageAndExit("degree argument should be >= 2", 1);
         }
