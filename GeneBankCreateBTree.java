@@ -54,11 +54,11 @@ public class GeneBankCreateBTree
         //todo: calculate degree
 
         //error checks
-        if (cacheSize <= 0)
+        if (cacheSize < 0)
         {
             printUsageAndExit("cache size should be positive", 1);
         }
-        if (degree < 2)
+        if (degree != 0 && degree < 2)
         {
             printUsageAndExit("degree argument should be >= 2", 1);
         }
@@ -142,23 +142,24 @@ public class GeneBankCreateBTree
 
             String messyDNAChunck = scan.next();
             String DNAChunk = messyDNAChunck.replaceAll("ORIGIN|\\n|\\s|[0-9]", "");
-            String[] DNAArray = DNAChunk.split("n+"); //one or more ns
-            for (int i = 0; i< DNAArray.length; i++)
-            {
-                String currentString = DNAArray[i];
-                while(currentString.length() >= sequenceLength)
+//            String[] DNAArray = DNAChunk.split("n+"); //one or more ns
+//            for (int i = 0; i< DNAArray.length; i++)
+//            {
+//                String currentString = DNAArray[i];
+                for (int j = 0; j <= DNAChunk.length() - sequenceLength; j++)
                 {
                     //make sub a long and insert it into the btree
-                    String sub = currentString.substring(0, sequenceLength); //ceiling is exclusive
-                    currentString = currentString.substring(1);
-                    long DNALong = stringToLong(sub);
-                    T.BTreeInsert(DNALong);
-                    System.out.println("sub: " + sub);
-
+                    String sub = DNAChunk.substring(j, j + sequenceLength); //ceiling is exclusive
+//                    currentString = currentString.substring(1);
+                    if (!sub.contains("n")) {
+                        long DNALong = stringToLong(sub);
+                        T.BTreeInsert(DNALong);
+//                        System.out.println("sub: " + sub);
+                    }
                     //subLenK[index] = sub;
                     //index++;
                     //tree.BTreeInsert(DNALong);
-                }
+//                }
             }
 
             }

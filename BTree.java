@@ -35,19 +35,24 @@ public class BTree {
     // maintains the end of file
     private long EOFPointer;
 
+    private int counter = 0;
+
     //Need to serialize Btree
 
     // class constructor
     public BTree(String fileName, int k, int t, int cacheSize, boolean useCache) throws IOException {
         byteFile = new RandomAccessFile(fileName, "rw");
         degree = t;
-        root = new BTreeNode(rootOffSet);
-        root.leaf = true;
-        seqLength = k;
 
         if (degree == 0) {
             degree = calculateOptimumDegree();
         }
+
+        root = new BTreeNode(rootOffSet);
+        root.leaf = true;
+        seqLength = k;
+
+
 
         this.writeMD();
 
@@ -135,6 +140,11 @@ public class BTree {
         } else {
             BTreeInsertNonfull(r, k);
         }
+        counter++;
+        if (counter % 100000  == 0) {
+            System.out.print(". ");
+        }
+
     }
 
     public void BTreeInsertNonfull(BTreeNode x, long k) throws IOException {
@@ -265,6 +275,7 @@ public class BTree {
     public void diskWrite(BTreeNode node) throws IOException{
         //Take a BTreeNode and serialize it and then write that information to the RAF
         if (BTreeCache != null) {
+            BTreeCache.removeObject(BTreeCache.getObject(node.location));
             BTreeNode retNode = BTreeCache.addObject(node);
             if (retNode != null) {
                 long address = retNode.getLocation();

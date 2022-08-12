@@ -8,7 +8,11 @@ import java.util.Scanner;
 public class GeneBankSearchBTree {
 
     private static String BTreeFile;
+
+
     public static void main(String args[]) throws IOException {
+
+        int searchCounter = 0;
 
         long startTime = System.currentTimeMillis();
         //todo: check # and accuracy of arguments
@@ -75,6 +79,13 @@ public class GeneBankSearchBTree {
                 {
                     System.out.println(query +  ": " + freq);
                 }
+
+                searchCounter++;
+
+                if (searchCounter % 100000  == 0) {
+                    System.out.print(". ");
+                }
+
             }
 
         } catch (IOException e) {
