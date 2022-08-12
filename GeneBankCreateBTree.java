@@ -46,7 +46,7 @@ public class GeneBankCreateBTree
         {
             debugLevel = Integer.parseInt(args[4]);
         }
-        else
+        else if (cache !=0 && cache != 1)
         {
             printUsageAndExit("cache argument should be 0 or 1", 1);
         }
