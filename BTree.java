@@ -112,6 +112,9 @@ public class BTree {
         } else if (x.leaf) {
             return -1;
         } else {
+            if (x.children[i] == 0) {
+                return -1;
+            }
             BTreeNode child = diskRead(x.children[i]);
             return BTreeSearch(child, k);
         }

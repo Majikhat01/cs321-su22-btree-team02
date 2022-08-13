@@ -54,6 +54,9 @@ public class GeneBankSearchBTree {
         {
             debugLevel = Integer.parseInt(args[3]);
         }
+        if (!(debugLevel == 1 || debugLevel == 0)) {
+            printUsageAndExit("Debug level must be either 1 or 0", 1);
+        }
 
 
 
