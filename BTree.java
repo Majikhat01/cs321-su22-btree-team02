@@ -112,6 +112,17 @@ public class BTree {
        return BTreeSearch(root, k);
     }
 
+    public void closeCache() throws IOException {
+        if (BTreeCache != null) {
+            while (!BTreeCache.isEmpty()) {
+                BTreeNode refNode = BTreeCache.getLast();
+                long address = refNode.getLocation();
+                byteFile.seek(refNode.getLocation());
+                byteFile.write(refNode.serialize());
+            }
+        }
+    }
+
     public void BTreeInsert(long k) throws IOException {
         BTreeNode r = root;
         if (r.getKeys() == ((2 * degree) - 1)) {

@@ -119,6 +119,8 @@ public class GeneBankCreateBTree
         }
 
         scan.close();
+
+        T.closeCache();
     }
 
 

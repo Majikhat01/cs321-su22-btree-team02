@@ -29,6 +29,22 @@ public class Cache<T> {
         return retNode;
     }
 
+    public BTree.BTreeNode getLast() {
+        if (!list.isEmpty()) {
+            return list.removeLast();
+        } else {
+            return null;
+        }
+    }
+
+    public boolean isEmpty(){
+        if (list.isEmpty()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public BTree.BTreeNode addObject(BTree.BTreeNode object) {
         BTree.BTreeNode retVal = null;
 
