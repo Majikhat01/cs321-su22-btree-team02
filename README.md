@@ -48,8 +48,8 @@ The BTree file that is created after running GeneBankCreateBTree has two main pa
       * The size of each key is 12 bytes because it only contains a long (8 bytes) and an int (4 bytes), which gets multiplied by the key function.
     * (2 * degree) is the formula for calculating the number of children in the node based on the degree.
       * The size of each child is just a long (8 bytes) because it's just a pointer to another node, which gets multiplied by the child function.
-
-    
+* If the degree was not entered/entered as 0 then an optimal degree is calculated based on the following equation:
+  * (4 + 1 + 12 * (2 * degree - 1) + 8 * (2 * degree)) <= 4096 which resulted in approximately 102 
 
 
 # READ BEFORE STARTING
