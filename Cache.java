@@ -7,9 +7,7 @@ public class Cache<T> {
 
     int maxSize;
 
-
     public Cache(int size){
-
 
         //Set max size of linked list
         maxSize = size;
@@ -21,6 +19,7 @@ public class Cache<T> {
 
     public BTree.BTreeNode getObject(long searchKey){
         BTree.BTreeNode retNode = null;
+
         for (BTree.BTreeNode node : list) {
             if (node.getLocation() == searchKey) {
                 return retNode = node;
@@ -32,22 +31,18 @@ public class Cache<T> {
 
     public BTree.BTreeNode addObject(BTree.BTreeNode object) {
         BTree.BTreeNode retVal = null;
+
         if (list.size() == maxSize) {
 
             retVal = list.removeLast();
         }
+
         list.addFirst(object);
         return retVal;
     }
 
     public void removeObject(BTree.BTreeNode object) {
-
         list.remove(object);
-    }
-
-    public void clearCache() {
-
-        list.clear();
     }
 
     public void moveObject(BTree.BTreeNode object) {

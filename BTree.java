@@ -1,7 +1,6 @@
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
-import java.util.Stack;
 
 public class BTree {
 
@@ -20,9 +19,6 @@ public class BTree {
     //Potential Cache Size
     private int cacheSize;
 
-    //Cache
-    private Cache cache;
-
     private long nextAddress;
 
     private Cache<BTreeNode> BTreeCache = null;
@@ -32,12 +28,7 @@ public class BTree {
 
     private int nodeSize = 4 + 1 + 12 * (2 * degree - 1) + 8 * (2 * degree);
 
-    // maintains the end of file
-    private long EOFPointer;
-
     private int counter = 0;
-
-    //Need to serialize Btree
 
     // class constructor
     public BTree(String fileName, int k, int t, int cacheSize, boolean useCache) throws IOException {
@@ -51,8 +42,6 @@ public class BTree {
         root = new BTreeNode(rootOffSet);
         root.leaf = true;
         seqLength = k;
-
-
 
         this.writeMD();
 
@@ -72,7 +61,6 @@ public class BTree {
         degree = byteFile.readInt();
         nodeSize = 4 + 1 + 12 * (2 * degree - 1) + 8 * (2 * degree);
         this.cacheSize = cacheSize;
-
         root = diskRead(rootOffSet);
     }
 
@@ -124,30 +112,27 @@ public class BTree {
        return BTreeSearch(root, k);
     }
 
-    // be careful not to add duplicate keys for Insert and Nonfull
-    // if key to be inserted is a duplicate, just increment frequency
     public void BTreeInsert(long k) throws IOException {
-
         BTreeNode r = root;
         if (r.getKeys() == ((2 * degree) - 1)) {
             BTreeNode s = new BTreeNode(nextAddress);
-            nextAddress = nextAddress + nodeSize; //allocate node
+            nextAddress = nextAddress + nodeSize;
             this.root = s;
             s.setLeaf(false);
             s.setKeys(0);
             s.children[1] = r.getLocation();
-
 
             BTreeSplitChild(s, 1, r);
             BTreeInsertNonfull(s, k);
         } else {
             BTreeInsertNonfull(r, k);
         }
+
         counter++;
+
         if (counter % 100000  == 0) {
             System.out.print(". ");
         }
-
     }
 
     public void BTreeInsertNonfull(BTreeNode x, long k) throws IOException {
@@ -163,6 +148,7 @@ public class BTree {
                     return;
                 }
             }
+
             while (i >= 1 && k < x.keys[i].getDNA()) {
                 x.keys[i + 1] = x.keys[i];
                 i--;
@@ -198,22 +184,9 @@ public class BTree {
                     return;
                 }
             }
+
             BTreeInsertNonfull(child, k);
         }
-    }
-
-    public BTreeNode BTreeSplitRoot(BTree T) throws IOException {
-    //We will call write root in this to update the root
-        BTreeNode s = new BTreeNode(nextAddress);
-        nextAddress = nextAddress + nodeSize;
-        BTreeNode r = new BTreeNode(nextAddress);
-        nextAddress = nextAddress + nodeSize;
-        s.leaf = false;
-        s.numKeys = 0;
-        s.children[1] = T.rootOffSet;
-        T.root = s;
-        BTreeSplitChild(s, 1, r);
-        return s;
     }
 
     public void BTreeSplitChild(BTreeNode x, int i, BTreeNode y) throws IOException {
@@ -263,6 +236,7 @@ public class BTree {
                 DumpTree(child, ps);
                 ps.append(x.keys[i].toString(seqLength) + "\n");
             }
+
             DumpTree(diskRead(x.children[x.numKeys + 1]), ps);
         }
     }
@@ -280,6 +254,7 @@ public class BTree {
         if (BTreeCache != null) {
             BTreeCache.removeObject(BTreeCache.getObject(node.location));
             BTreeNode retNode = BTreeCache.addObject(node);
+
             if (retNode != null) {
                 long address = retNode.getLocation();
                 byteFile.seek(retNode.getLocation());
@@ -302,12 +277,15 @@ public class BTree {
                 byteFile.read(bb.array());
                 BTreeNode addNode = new BTreeNode(bb, nodeAddress);
                 BTreeNode writeNode = BTreeCache.addObject(addNode);
+
                 if (writeNode != null) {
                     byteFile.seek(writeNode.getLocation());
                     byteFile.write(writeNode.serialize());
                 }
+
                 return addNode;
             }
+
             BTreeCache.moveObject(retNode);
             return retNode;
         } else {
@@ -330,23 +308,6 @@ public class BTree {
             System.out.println(e.toString());
         }
     }
-
-    public BTreeNode getRoot() {
-        return root;
-    }
-
-//    public void setRoot() {
-//        ByteBuffer bb = ByteBuffer.allocate(8);
-//        bb.putLong(root.location);
-//        try {
-//            byteFile.seek(0);
-//            byteFile.write(bb.array());
-//        } catch(IOException e) {
-//            System.out.print(e.toString());
-//        }
-//
-//        //Call setRoot to update the final root value of where it's at one time finally in GeneBankCreateBTree
-//    }
 
     public int calculateOptimumDegree() {
         //NodeSize <= 4096
@@ -399,35 +360,18 @@ public class BTree {
             return leaf;
         }
 
-        public int setDegree(int n) {
-            return degree = n;
-        }
-
         public void setLeaf(boolean value) {
             leaf = value;
         }
 
-        public void setChild(long fileLocation, int index) {
-            children[index] = fileLocation;
-        }
-
-        public boolean isEmpty() {
-            return (this.keys.length == 0);
-        }
-
-        public boolean equals(BTree.BTreeNode obj) {
-            return (this.getLocation() == obj.getLocation());
-        }
-
-
-
-
         @Override
         public String toString() {
             String retVal = "";
+
             for (int i = 1; i <= this.getKeys(); i++) {
                 retVal += this.keys[i].getDNA() + ", ";
             }
+
             return retVal;
         }
 
@@ -447,6 +391,7 @@ public class BTree {
                 bb.putLong(keys[i].getDNA());
                 bb.putInt(keys[i].getFrequency());
             }
+
             for (int i = 1; i <= numKeys + 1; i++) {
                 bb.putLong(children[i]);
             }
@@ -477,6 +422,7 @@ public class BTree {
             if (this.location == o) {
                 return 1;
             }
+
             return 0;
         }
     }

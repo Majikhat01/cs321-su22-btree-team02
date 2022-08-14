@@ -26,6 +26,13 @@ Below are tables showing the run times of different tests using different cache 
 | Test4          |             |             |             |
 | Test5          |  0.353 sec  |  0.276 sec  |  0.286 sec  |
 
+# Notes on cache speed and usage
+When using the cache you can see a significant reduction in the time it takes to create the BTree, especially on Test5.
+Increasing the size of the cache makes it run a little faster, but there are definitely diminishing returns the bigger you make the cache.
+This is because when using the 500 size cache, the first 100 elements of the cache are still the most frequently accessed nodes like a cache size of 100.
+The bigger the cache gets, the more it starts to work like there is no cache at all. Although there are less diskReads and diskWrites when using a larger cache,
+there are more elements being stored in the cache which takes longer to search through when looking for a specific node.
+
 # BTree file layout
 The BTree file that is created after running GeneBankCreateBTree has two main parts.
 * The first part is the metadata needed in order to tell GeneBankSearchBTree how to parse the file in order to create the BTree nodes needed to create the BTree.

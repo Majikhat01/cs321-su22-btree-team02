@@ -20,23 +20,12 @@ public class TreeObject {
         return frequency = newFrequency;
     }
 
-    public int compareTo(TreeObject compObject) {
-        if (DNA > compObject.getDNA()) {
-            return 1;
-        }
-        if (DNA < compObject.getDNA()) {
-            return -1;
-        }
-        return 0;
-    }
-
     public TreeObject(long startDNA, int newFrequency) {
         DNA = startDNA;
         frequency = newFrequency;
     }
 
     public long getDNA() {
-
         return DNA;
     }
 
@@ -44,11 +33,14 @@ public class TreeObject {
         int k = sequenceLength;
         String stringDNA = Long.toBinaryString(DNA);
         StringBuilder returnDNA = new StringBuilder();
+
         while (stringDNA.length() < sequenceLength * 2) {
             stringDNA = "0".concat(stringDNA);
         }
+
         for (int i = 0; i < stringDNA.length(); i += 2) {
             String singleDNA = stringDNA.substring(i, i+2);
+
             switch (singleDNA) {
                 case "00": returnDNA.append("a");
                     break;
@@ -60,7 +52,7 @@ public class TreeObject {
                     break;
             }
         }
+
         return  returnDNA + ": " + frequency;
     }
-
 }
