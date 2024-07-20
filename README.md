@@ -1,5 +1,41 @@
+# GeneBank BTree Project
 
-# ADD YOUR README UNDER THIS SECTION
+## Overview
+This project demonstrates the implementation and usage of a B-Tree data structure to store and search for DNA sequences. The primary focus is on creating and querying a B-Tree for efficient storage and retrieval of DNA sequence data.
+
+## Contents
+
+### 1. BTree.java
+This file contains the main implementation of the B-Tree data structure. It includes methods for inserting, searching, splitting nodes, and handling disk I/O operations. Key functionalities:
+- **BTree Constructor**: Initializes a BTree with parameters for degree, sequence length, and cache usage.
+- **BTreeNode Class**: Represents a node in the BTree with methods for serialization and deserialization.
+- **BTree Operations**: Methods for inserting and searching DNA sequences, managing cache, and writing metadata to disk.
+
+### 2. BTreeNodeTester.java
+A test class to demonstrate the functionality of the BTree class. It includes:
+- **Main Method**: Inserts multiple DNA sequences into the BTree and retrieves nodes to verify correctness.
+
+### 3. Cache.java
+Implements a simple cache mechanism using a linked list to store and manage BTree nodes for efficient access. Key functionalities:
+- **Cache Constructor**: Initializes the cache with a specified size.
+- **Cache Operations**: Methods for adding, retrieving, and removing nodes from the cache.
+
+### 4. GeneBankCreateBTree.java
+A command-line tool to create a BTree from a given GeneBank file. Key functionalities:
+- **Main Method**: Parses command-line arguments and initializes the BTree.
+- **scanDNA Method**: Reads DNA sequences from the GeneBank file, converts them to long integers, and inserts them into the BTree.
+
+### 5. GeneBankSearchBTree.java
+A command-line tool to search a BTree for specified DNA sequences. Key functionalities:
+- **Main Method**: Parses command-line arguments and searches the BTree for given DNA sequences.
+- **Query Processing**: Converts DNA sequence strings to long integers and retrieves their frequencies from the BTree.
+
+### 6. TreeObject.java
+Represents a DNA sequence and its frequency in the BTree. Key functionalities:
+- **TreeObject Constructor**: Initializes a TreeObject with a DNA sequence and its frequency.
+- **Serialization**: Converts DNA sequences to binary strings for storage and retrieval.
+
+## Output
 Below are tables showing the run times of different tests using different cache sizes for both GeneBankCreateBTree.java and GeneBankSearchBTree.java.
 * All tests were run on a student computer with an auto calculated optimal degree and a sequence length of 7.
 * Times are approximate +/- 0.05 sec.
